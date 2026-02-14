@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D Semiconductor Device Viewer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap');
+  :root {
+    --bg:#0a0e17;--bg2:#111827;--bgp:rgba(17,24,39,0.9);
+    --bdr:rgba(99,130,255,0.15);--acc:#6382ff;--accg:rgba(99,130,255,0.3);
+    --t1:#e2e8f0;--t2:#94a3b8;--t3:#64748b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--t1);font-family:'Outfit',sans-serif;overflow:hidden;height:100vh;width:100vw;}
+  #cv{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;}
+  .bar{position:fixed;top:0;left:0;right:0;height:44px;background:var(--bgp);backdrop-filter:blur(20px);border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 14px;z-index:100;gap:10px;}
+  .logo{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:13px;color:var(--acc);}
+  .logo span{color:var(--t3);font-weight:300;}
+  .dvd{width:1px;height:18px;background:var(--bdr);}
+  .inf{font-size:11px;color:var(--t2);font-weight:300;}
+  .inf strong{color:var(--t1);font-weight:500;}
+  .tl{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);background:var(--bgp);backdrop-filter:blur(20px);border:1px solid var(--bdr);border-radius:12px;padding:10px 16px 12px;z-index:100;width:calc(100% - 24px);max-width:640px;}
+  .tlh{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .tlt{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);font-weight:500;}
+  .slb{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--acc);font-weight:500;}
+  .tlk{display:flex;gap:3px;margin-bottom:6px;}
+  .ts{flex:1;height:30px;border-radius:5px;border:1px solid var(--bdr);background:var(--bg2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:8px;font-family:'JetBrains Mono',monospace;color:var(--t3);transition:all .25s;position:relative;overflow:hidden;user-select:none;}
+  .ts:hover{border-color:var(--acc);color:var(--t2);}
+  .ts.a{border-color:var(--acc);background:rgba(99,130,255,.12);color:var(--acc);font-weight:500;box-shadow:0 0 12px var(--accg);}
+  .ts.c::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--acc);}
+  .sd{display:flex;gap:10px;font-size:10px;color:var(--t2);font-family:'JetBrains Mono',monospace;flex-wrap:wrap;}
+  .sd .p{color:var(--t3);}.sd .v{color:var(--t1);font-weight:500;}
+  .sp{position:fixed;top:54px;right:8px;width:164px;background:var(--bgp);backdrop-filter:blur(20px);border:1px solid var(--bdr);border-radius:10px;padding:10px;z-index:100;}
+  .pt{font-size:8px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);font-weight:500;margin-bottom:6px;}
+  .li{display:flex;align-items:center;gap:7px;margin-bottom:4px;font-size:10px;color:var(--t2);}
+  .sw{width:11px;height:11px;border-radius:2px;flex-shrink:0;}
+  .tgs{margin-top:8px;padding-top:6px;border-top:1px solid var(--bdr);}
+  .tr{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+  .tgl{font-size:10px;color:var(--t2);}
+  .tgw{position:relative;width:28px;height:15px;cursor:pointer;}
+  .tgw input{opacity:0;width:0;height:0;}
+  .tgsl{position:absolute;inset:0;background:var(--bg2);border:1px solid var(--bdr);border-radius:8px;transition:.25s;}
+  .tgsl::before{content:'';position:absolute;width:9px;height:9px;left:2px;top:2px;background:var(--t3);border-radius:50%;transition:.25s;}
+  .tgw input:checked+.tgsl{background:rgba(99,130,255,.25);border-color:var(--acc);}
+  .tgw input:checked+.tgsl::before{transform:translateX(13px);background:var(--acc);}
+  .ch{margin-top:8px;padding-top:6px;border-top:1px solid var(--bdr);}
+  .hr{display:flex;align-items:center;gap:5px;margin-bottom:3px;font-size:9px;color:var(--t3);}
+  .hk{font-family:'JetBrains Mono',monospace;font-size:8px;background:var(--bg2);border:1px solid var(--bdr);border-radius:3px;padding:1px 4px;color:var(--t2);}
+  .lo{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1000;transition:opacity .5s;}
+  .lo.h{opacity:0;pointer-events:none;}
+  .ls{width:32px;height:32px;border:2px solid var(--bdr);border-top-color:var(--acc);border-radius:50%;animation:sp .8s linear infinite;margin-bottom:10px;}
+  .lt{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);}
+  @keyframes sp{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+<div class="lo" id="ld"><div class="ls"></div><div class="lt">Initializing 3D Viewer...</div></div>
+<div id="cv"></div>
+<div class="bar">
+  <div class="logo">ProcessViz<span>.io</span></div><div class="dvd"></div>
+  <div class="inf"><strong>FinFET Process Flow</strong> — 7 steps</div><div class="dvd"></div>
+  <div class="inf" id="vc">Voxels: —</div>
+</div>
+<div class="sp">
+  <div class="pt">Materials</div>
+  <div class="li"><div class="sw" style="background:#5b7fa6"></div>Silicon</div>
+  <div class="li"><div class="sw" style="background:#c4956a"></div>SiO₂</div>
+  <div class="li"><div class="sw" style="background:#7ab87a"></div>Si₃N₄</div>
+  <div class="li"><div class="sw" style="background:#c97a7a"></div>Poly-Si</div>
+  <div class="li"><div class="sw" style="background:#b8b8b8"></div>TiN Metal</div>
+  <div class="li"><div class="sw" style="background:#76a8e8"></div>N+ Implant</div>
+  <div class="li"><div class="sw" style="background:#e87676"></div>P-body</div>
+  <div class="tgs">
+    <div class="pt">Display</div>
+    <div class="tr"><span class="tgl">Wireframe</span><label class="tgw"><input type="checkbox" id="tw"><span class="tgsl"></span></label></div>
+    <div class="tr"><span class="tgl">Cross-section</span><label class="tgw"><input type="checkbox" id="ts"><span class="tgsl"></span></label></div>
+    <div class="tr"><span class="tgl">Auto-rotate</span><label class="tgw"><input type="checkbox" id="ta" checked><span class="tgsl"></span></label></div>
+  </div>
+  <div class="ch">
+    <div class="pt">Controls</div>
+    <div class="hr"><span class="hk">Drag</span>Rotate</div>
+    <div class="hr"><span class="hk">Scroll</span>Zoom</div>
+    <div class="hr"><span class="hk">← →</span>Steps</div>
+  </div>
+</div>
+<div class="tl">
+  <div class="tlh"><span class="tlt">Process Steps</span><span class="slb" id="cl">Step 1/7</span></div>
+  <div class="tlk" id="tk"></div>
+  <div class="sd" id="dt"></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const ST=[
+  {n:"Si Substrate",s:"SUBSTR",p:{mat:"Si",orient:"(100)",dop:"P 1e15"}},
+  {n:"STI Oxidation",s:"STI OX",p:{proc:"Thermal",T:"1000°C",t:"30min"}},
+  {n:"Fin Etch",s:"FIN ETCH",p:{proc:"RIE",d:"80nm",w:"7nm"}},
+  {n:"Gate Oxide",s:"GOX",p:{proc:"ALD HfO₂",t:"1.2nm",κ:"22"}},
+  {n:"Gate Deposit",s:"GATE DEP",p:{mat:"TiN+Poly",t:"40nm"}},
+  {n:"Gate Etch",s:"GATE ETCH",p:{proc:"Aniso RIE",Lg:"14nm"}},
+  {n:"S/D Implant",s:"S/D IMP",p:{ion:"Phos",E:"5keV",dose:"5e14"}}
+];
+const NX=40,NY=24,NZ=30;
+const E=0,SI=1,OX=2,NI=3,PO=4,ME=5,NP=6,PB=7;
+const CC={[SI]:0x5b7fa6,[OX]:0xc4956a,[NI]:0x7ab87a,[PO]:0xc97a7a,[ME]:0xb8b8b8,[NP]:0x76a8e8,[PB]:0xe87676};
+const ix=(x,y,z)=>x+NX*(y+NY*z);
+function fb(g,x0,y0,z0,x1,y1,z1,m){for(let z=z0;z<z1;z++)for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++)if(x>=0&&x<NX&&y>=0&&y<NY&&z>=0&&z<NZ)g[ix(x,y,z)]=m;}
+function bg(){
+  const gs=[];let g=new Uint8Array(NX*NY*NZ);
+  fb(g,0,0,0,NX,12,NZ,SI);gs.push(g);
+  g=new Uint8Array(gs[0]);fb(g,0,6,0,12,12,NZ,OX);fb(g,28,6,0,NX,12,NZ,OX);gs.push(g);
+  g=new Uint8Array(gs[1]);
+  for(let x=12;x<28;x++)for(let z=0;z<NZ;z++)for(let y=10;y<16;y++){if(!((x>=14&&x<=16)||(x>=19&&x<=21)||(x>=24&&x<=26)))g[ix(x,y,z)]=E;}
+  for(let z=0;z<NZ;z++){fb(g,14,12,z,17,17,z+1,SI);fb(g,19,12,z,22,17,z+1,SI);fb(g,24,12,z,27,17,z+1,SI);}
+  gs.push(g);
+  g=new Uint8Array(gs[2]);
+  for(let z=10;z<20;z++){
+    fb(g,13,12,z,14,17,z+1,OX);fb(g,17,12,z,18,17,z+1,OX);fb(g,14,17,z,17,18,z+1,OX);
+    fb(g,18,12,z,19,17,z+1,OX);fb(g,22,12,z,23,17,z+1,OX);fb(g,19,17,z,22,18,z+1,OX);
+    fb(g,23,12,z,24,17,z+1,OX);fb(g,27,12,z,28,17,z+1,OX);fb(g,24,17,z,27,18,z+1,OX);
+  }gs.push(g);
+  g=new Uint8Array(gs[3]);
+  for(let z=10;z<20;z++){
+    fb(g,12,12,z,28,20,z+1,ME);
+    fb(g,13,12,z,18,17,z+1,OX);fb(g,14,12,z,17,17,z+1,SI);fb(g,14,17,z,17,18,z+1,OX);
+    fb(g,18,12,z,23,17,z+1,OX);fb(g,19,12,z,22,17,z+1,SI);fb(g,19,17,z,22,18,z+1,OX);
+    fb(g,23,12,z,28,17,z+1,OX);fb(g,24,12,z,27,17,z+1,SI);fb(g,24,17,z,27,18,z+1,OX);
+    fb(g,12,18,z,28,22,z+1,PO);
+  }gs.push(g);
+  g=new Uint8Array(gs[4]);
+  for(let z=0;z<NZ;z++)if(z<12||z>=18)for(let y=12;y<22;y++)for(let x=12;x<28;x++){const m=g[ix(x,y,z)];if(m===ME||m===PO)g[ix(x,y,z)]=E;if(m===OX&&y>=17)g[ix(x,y,z)]=E;}
+  gs.push(g);
+  g=new Uint8Array(gs[5]);
+  for(let z=0;z<NZ;z++)if(z<12||z>=18)for(let y=12;y<17;y++)for(let x=12;x<28;x++)if(g[ix(x,y,z)]===SI)g[ix(x,y,z)]=NP;
+  for(let z=0;z<NZ;z++)for(let x=12;x<28;x++)for(let y=0;y<10;y++)if(g[ix(x,y,z)]===SI)g[ix(x,y,z)]=PB;
+  gs.push(g);return gs;
+}
+let sc,ca,re,cm=[],cs=0,gr,wf=false,sl=false,ar=true,dr=false,rd=false,pv={x:0,y:0};
+let sp={t:.8,p:1,r:65},tg=new THREE.Vector3(NX/2,8,NZ/2);
+function init(){
+  sc=new THREE.Scene();sc.background=new THREE.Color(0x0a0e17);sc.fog=new THREE.FogExp2(0x0a0e17,.008);
+  ca=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,.1,1000);
+  re=new THREE.WebGLRenderer({antialias:true});re.setSize(innerWidth,innerHeight);re.setPixelRatio(Math.min(devicePixelRatio,2));
+  re.shadowMap.enabled=true;document.getElementById('cv').appendChild(re.domElement);
+  sc.add(new THREE.AmbientLight(0x404060,.6));
+  const dl=new THREE.DirectionalLight(0xffffff,.8);dl.position.set(30,50,40);dl.castShadow=true;sc.add(dl);
+  const fl=new THREE.DirectionalLight(0x6382ff,.3);fl.position.set(-20,20,-10);sc.add(fl);
+  const gh=new THREE.GridHelper(80,40,0x1a2540,0x111d30);gh.position.set(NX/2,-.5,NZ/2);sc.add(gh);
+  const el=re.domElement;
+  el.addEventListener('mousedown',e=>{dr=true;rd=e.button===2;pv={x:e.clientX,y:e.clientY};});
+  el.addEventListener('mousemove',e=>{if(!dr)return;const dx=e.clientX-pv.x,dy=e.clientY-pv.y;pv={x:e.clientX,y:e.clientY};
+    if(rd){const r=new THREE.Vector3();r.crossVectors(ca.getWorldDirection(new THREE.Vector3()),new THREE.Vector3(0,1,0)).normalize();tg.add(r.multiplyScalar(-dx*.05));tg.y+=dy*.05;}
+    else{sp.t-=dx*.005;sp.p-=dy*.005;sp.p=Math.max(.1,Math.min(Math.PI-.1,sp.p));}});
+  el.addEventListener('mouseup',()=>dr=false);el.addEventListener('mouseleave',()=>dr=false);
+  el.addEventListener('wheel',e=>{sp.r+=e.deltaY*.05;sp.r=Math.max(20,Math.min(150,sp.r));},{passive:true});
+  el.addEventListener('contextmenu',e=>e.preventDefault());
+  let ltd=0,lt={x:0,y:0};
+  el.addEventListener('touchstart',e=>{if(e.touches.length===1){dr=true;lt={x:e.touches[0].clientX,y:e.touches[0].clientY};}
+    if(e.touches.length===2){const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY;ltd=Math.sqrt(dx*dx+dy*dy);}},{passive:true});
+  el.addEventListener('touchmove',e=>{e.preventDefault();
+    if(e.touches.length===1&&dr){const dx=e.touches[0].clientX-lt.x,dy=e.touches[0].clientY-lt.y;lt={x:e.touches[0].clientX,y:e.touches[0].clientY};sp.t-=dx*.005;sp.p-=dy*.005;sp.p=Math.max(.1,Math.min(Math.PI-.1,sp.p));}
+    if(e.touches.length===2){const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY,d=Math.sqrt(dx*dx+dy*dy);sp.r+=(ltd-d)*.15;sp.r=Math.max(20,Math.min(150,sp.r));ltd=d;}},{passive:false});
+  el.addEventListener('touchend',()=>dr=false);
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')ss(Math.min(cs+1,gr.length-1));if(e.key==='ArrowLeft')ss(Math.max(cs-1,0));});
+  gr=bg();bt();ss(0);setTimeout(()=>document.getElementById('ld').classList.add('h'),400);an();
+}
+function bm(g){
+  const mv={};let tot=0;
+  for(let z=0;z<NZ;z++)for(let y=0;y<NY;y++)for(let x=0;x<NX;x++){
+    const m=g[ix(x,y,z)];if(m===E)continue;if(sl&&z>=NZ/2)continue;
+    let ex=false;for(const[dx,dy,dz]of[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]]){
+      const nx=x+dx,ny=y+dy,nz=z+dz;
+      if(nx<0||nx>=NX||ny<0||ny>=NY||nz<0||nz>=NZ){ex=true;break;}
+      if(sl&&nz>=NZ/2){ex=true;break;}
+      if(g[ix(nx,ny,nz)]===E||g[ix(nx,ny,nz)]!==m){ex=true;break;}}
+    if(!ex)continue;if(!mv[m])mv[m]=[];mv[m].push([x,y,z]);tot++;}
+  document.getElementById('vc').textContent=`Voxels: ${tot.toLocaleString()}`;
+  const ms=[],bx=new THREE.BoxGeometry(.95,.95,.95);
+  for(const[mt,ps]of Object.entries(mv)){
+    const ma=new THREE.MeshPhongMaterial({color:CC[parseInt(mt)]||0xffffff,wireframe:wf,transparent:true,opacity:wf?.6:.92,shininess:60,specular:0x222233});
+    const im=new THREE.InstancedMesh(bx,ma,ps.length),d=new THREE.Object3D();
+    ps.forEach(([x,y,z],i)=>{d.position.set(x,y,z);d.updateMatrix();im.setMatrixAt(i,d.matrix);});
+    im.castShadow=true;im.receiveShadow=true;ms.push(im);}
+  return ms;
+}
+function ss(i){cm.forEach(m=>sc.remove(m));cs=i;cm=bm(gr[i]);cm.forEach(m=>sc.add(m));uu();}
+function bt(){const t=document.getElementById('tk');t.innerHTML='';ST.forEach((s,i)=>{const e=document.createElement('div');e.className='ts';e.textContent=s.s;e.addEventListener('click',()=>ss(i));t.appendChild(e);});}
+function uu(){document.querySelectorAll('.ts').forEach((e,i)=>{e.classList.toggle('a',i===cs);e.classList.toggle('c',i<cs);});
+  document.getElementById('cl').textContent=`Step ${cs+1}/7 — ${ST[cs].n}`;
+  document.getElementById('dt').innerHTML=Object.entries(ST[cs].p).map(([k,v])=>`<span><span class="p">${k}:</span> <span class="v">${v}</span></span>`).join('');}
+function an(){requestAnimationFrame(an);if(ar&&!dr)sp.t+=.002;
+  ca.position.set(tg.x+sp.r*Math.sin(sp.p)*Math.cos(sp.t),tg.y+sp.r*Math.cos(sp.p),tg.z+sp.r*Math.sin(sp.p)*Math.sin(sp.t));
+  ca.lookAt(tg);re.render(sc,ca);}
+addEventListener('resize',()=>{ca.aspect=innerWidth/innerHeight;ca.updateProjectionMatrix();re.setSize(innerWidth,innerHeight);});
+document.getElementById('tw').addEventListener('change',e=>{wf=e.target.checked;ss(cs);});
+document.getElementById('ts').addEventListener('change',e=>{sl=e.target.checked;ss(cs);});
+document.getElementById('ta').addEventListener('change',e=>{ar=e.target.checked;});
+init();
+</script>
+</body>
+</html>
