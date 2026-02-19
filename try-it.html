@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Try It — OpenTCAD</title>
+    <meta name="description" content="Test the OpenTCAD cloud compute pipeline live. Send a request to our server and see the result in real time.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QZ407JK5J3"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-QZ407JK5J3');
+    </script>
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-card: #1a2236;
+            --bg-card-hover: #1f2a42;
+            --text-primary: #e8edf5;
+            --text-secondary: #8892a8;
+            --text-muted: #5a6478;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.3);
+            --accent-subtle: rgba(59, 130, 246, 0.08);
+            --green: #10b981;
+            --green-glow: rgba(16, 185, 129, 0.3);
+            --amber: #f59e0b;
+            --red: #ef4444;
+            --border: rgba(255, 255, 255, 0.06);
+            --border-accent: rgba(59, 130, 246, 0.2);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --radius-lg: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Outfit', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* — Navigation — */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-logo span { color: var(--accent); }
+
+        .nav-links {
+            display: flex;
+            gap: 1.8rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 400;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--text-primary); }
+        .nav-links a.active { color: var(--text-primary); font-weight: 500; }
+
+        /* — Main Content — */
+        .page-content {
+            max-width: 620px;
+            margin: 0 auto;
+            padding: 8rem 2rem 4rem;
+        }
+
+        .section-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .section-desc {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        /* — Try Container — */
+        .try-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .try-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--green), transparent);
+            opacity: 0.6;
+        }
+
+        .try-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        .try-description code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            align-items: stretch;
+        }
+
+        .input-field {
+            flex: 1;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0.85rem 1.2rem;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-field::placeholder { color: var(--text-muted); }
+
+        .input-field:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-subtle);
+        }
+
+        .btn-run {
+            background: var(--green);
+            color: #fff;
+            padding: 0.85rem 1.6rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+            letter-spacing: 0.02em;
+        }
+
+        .btn-run:hover:not(:disabled) {
+            background: #0ea472;
+            box-shadow: 0 0 20px var(--green-glow);
+            transform: translateY(-1px);
+        }
+
+        .btn-run:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .btn-run.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn-run.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 18px;
+            height: 18px;
+            margin: -9px 0 0 -9px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* — Result Panel — */
+        .result-panel {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+
+        .result-panel.success { border-color: rgba(16, 185, 129, 0.3); }
+        .result-panel.error { border-color: rgba(239, 68, 68, 0.3); }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .result-header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .result-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .result-panel.success .result-dot {
+            background: var(--green);
+            box-shadow: 0 0 6px var(--green-glow);
+        }
+
+        .result-panel.error .result-dot { background: var(--red); }
+
+        .result-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .result-time {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        .result-body {
+            padding: 1rem;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+        }
+
+        .result-body pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .result-placeholder {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .result-body .json-key { color: #818cf8; }
+        .result-body .json-value-num { color: var(--green); }
+        .result-body .json-value-str { color: var(--amber); }
+
+        /* — Pipeline — */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .pipeline-step {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .pipeline-step .step-icon {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.3rem 0.6rem;
+            transition: all 0.3s;
+        }
+
+        .pipeline-step.active .step-icon {
+            border-color: var(--border-accent);
+            background: var(--accent-subtle);
+            color: var(--accent);
+        }
+
+        .pipeline-arrow {
+            color: var(--text-muted);
+            font-size: 0.65rem;
+            opacity: 0.4;
+        }
+
+        /* — Note — */
+        .pipeline-note {
+            margin-top: 2rem;
+            padding: 1rem 1.2rem;
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid var(--border-accent);
+            border-radius: var(--radius-sm);
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* — Footer — */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        footer a:hover { color: var(--accent); }
+
+        /* — Responsive — */
+        @media (max-width: 640px) {
+            nav { padding: 0.8rem 1.2rem; }
+            .nav-links { gap: 1rem; }
+            .nav-links a { font-size: 0.8rem; }
+            .page-content { padding: 7rem 1.2rem 3rem; }
+            .try-container { padding: 1.5rem; }
+            .input-group { flex-direction: column; }
+            .pipeline-step { font-size: 0.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="index.html" class="nav-logo">Open<span>TCAD</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="emulator.html">Emulator</a></li>
+            <li><a href="docs.html">Docs</a></li>
+            <li><a href="try-it.html" class="active">Try It</a></li>
+            <li><a href="about.html">About</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-content">
+        <div class="section-label">Try It Now</div>
+        <h1 class="section-title">Cloud Compute, Live</h1>
+        <p class="section-desc">Send a request to our cloud server and get a response in real time. This is the same pipeline that will power the full process emulator.</p>
+
+        <div class="try-container">
+            <p class="try-description">
+                Enter a number below and hit <strong>Run</strong>. Your input travels to our AWS server, gets processed by a C++ backend, and the result comes back as JSON — the exact <code>Browser → API → C++ → JSON</code> pipeline behind OpenTCAD.
+            </p>
+
+            <div class="input-group">
+                <input type="number" id="inputNumber" class="input-field" placeholder="Enter a number (e.g. 42)" value="42">
+                <button id="runBtn" class="btn-run" onclick="runCalculation()">▶ Run</button>
+            </div>
+
+            <div class="result-panel" id="resultPanel">
+                <div class="result-header">
+                    <div class="result-header-left">
+                        <div class="result-dot"></div>
+                        <span class="result-label">Response</span>
+                    </div>
+                    <span class="result-time" id="resultTime"></span>
+                </div>
+                <div class="result-body" id="resultBody">
+                    <span class="result-placeholder">Result will appear here...</span>
+                </div>
+            </div>
+
+            <div class="pipeline" id="pipeline">
+                <div class="pipeline-step" id="step-browser">
+                    <span class="step-icon">Browser</span>
+                </div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-step" id="step-api">
+                    <span class="step-icon">FastAPI</span>
+                </div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-step" id="step-cpp">
+                    <span class="step-icon">C++</span>
+                </div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-step" id="step-json">
+                    <span class="step-icon">JSON</span>
+                </div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-step" id="step-render">
+                    <span class="step-icon">Render</span>
+                </div>
+            </div>
+
+            <div class="pipeline-note">
+                When the full emulator is connected, this pipeline will deliver 3D process emulation results instead of a simple calculation. The infrastructure is the same — only the C++ engine changes.
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 OpenTCAD. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const API_URL = 'https://api.opentcad.dev/calculate';
+
+        function setActiveStep(stepId) {
+            document.querySelectorAll('.pipeline-step').forEach(s => s.classList.remove('active'));
+            if (stepId) {
+                document.getElementById(stepId).classList.add('active');
+            }
+        }
+
+        function formatJson(obj) {
+            const json = JSON.stringify(obj, null, 2);
+            return json.replace(/"([^"]+)":/g, '<span class="json-key">"$1"</span>:')
+                       .replace(/: (\d+\.?\d*)/g, ': <span class="json-value-num">$1</span>')
+                       .replace(/: "([^"]+)"/g, ': <span class="json-value-str">"$1"</span>');
+        }
+
+        async function runCalculation() {
+            const input = document.getElementById('inputNumber');
+            const btn = document.getElementById('runBtn');
+            const panel = document.getElementById('resultPanel');
+            const body = document.getElementById('resultBody');
+            const timeEl = document.getElementById('resultTime');
+            const number = parseFloat(input.value);
+
+            if (isNaN(number)) {
+                panel.className = 'result-panel error';
+                body.innerHTML = '<pre><span class="json-value-str">Please enter a valid number.</span></pre>';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.classList.add('loading');
+            btn.textContent = '▶ Run';
+            panel.className = 'result-panel';
+            body.innerHTML = '<span class="result-placeholder">Processing...</span>';
+            timeEl.textContent = '';
+
+            const startTime = performance.now();
+
+            try {
+                setActiveStep('step-browser');
+                await sleep(150);
+
+                setActiveStep('step-api');
+
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ number: number })
+                });
+
+                setActiveStep('step-cpp');
+                await sleep(100);
+
+                if (!response.ok) {
+                    throw new Error(`Server responded with ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                setActiveStep('step-json');
+                await sleep(100);
+
+                setActiveStep('step-render');
+
+                const elapsed = ((performance.now() - startTime) / 1000).toFixed(2);
+
+                panel.className = 'result-panel success';
+                body.innerHTML = `<pre>${formatJson(data)}</pre>`;
+                timeEl.textContent = `${elapsed}s`;
+
+            } catch (err) {
+                const elapsed = ((performance.now() - startTime) / 1000).toFixed(2);
+                panel.className = 'result-panel error';
+                body.innerHTML = `<pre><span class="json-value-str">Error: ${err.message}</span>\n\n<span class="json-key">The server may be temporarily offline.</span>\nPlease try again later.</pre>`;
+                timeEl.textContent = `${elapsed}s`;
+                setActiveStep(null);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('loading');
+            }
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        document.getElementById('inputNumber').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') runCalculation();
+        });
+    </script>
+
+</body>
+</html>

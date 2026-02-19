@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OpenTCAD — Cloud-Based Semiconductor Process Emulation</title>
-    <meta name="description" content="Real-time 3D semiconductor process emulation in your browser. No installation, no expensive licenses.">
+    <meta name="description" content="Semiconductor process emulation in your browser. Minutes, not hours. No installation, no expensive licenses.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -39,15 +39,8 @@
             --radius-lg: 16px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: 'Outfit', -apple-system, sans-serif;
@@ -57,7 +50,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ── Navigation ── */
+        /* — Navigation — */
         nav {
             position: fixed;
             top: 0;
@@ -82,14 +75,13 @@
             letter-spacing: -0.02em;
         }
 
-        .nav-logo span {
-            color: var(--accent);
-        }
+        .nav-logo span { color: var(--accent); }
 
         .nav-links {
             display: flex;
-            gap: 2rem;
+            gap: 1.8rem;
             list-style: none;
+            align-items: center;
         }
 
         .nav-links a {
@@ -100,13 +92,31 @@
             transition: color 0.2s;
         }
 
-        .nav-links a:hover {
+        .nav-links a:hover { color: var(--text-primary); }
+
+        .nav-links a.active {
             color: var(--text-primary);
+            font-weight: 500;
         }
 
-        /* ── Hero Section ── */
+        .nav-links a.nav-cta {
+            background: var(--accent);
+            color: #fff;
+            padding: 0.4rem 1rem;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.25s ease;
+        }
+
+        .nav-links a.nav-cta:hover {
+            background: #4f8ff7;
+            transform: translateY(-1px);
+        }
+
+        /* — Hero — */
         .hero {
-            min-height: 100vh;
+            min-height: 80vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -187,10 +197,6 @@
         }
 
         .hero-actions {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: center;
             animation: fadeInDown 0.6s ease 0.3s both;
         }
 
@@ -221,19 +227,7 @@
             transform: translateY(-1px);
         }
 
-        .btn-secondary {
-            background: var(--bg-card);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:hover {
-            background: var(--bg-card-hover);
-            border-color: var(--border-accent);
-            transform: translateY(-1px);
-        }
-
-        /* ── Stats Strip ── */
+        /* — Stats — */
         .stats {
             display: flex;
             gap: 3rem;
@@ -241,9 +235,7 @@
             animation: fadeInDown 0.6s ease 0.4s both;
         }
 
-        .stat {
-            text-align: center;
-        }
+        .stat { text-align: center; }
 
         .stat-value {
             font-family: 'JetBrains Mono', monospace;
@@ -260,45 +252,20 @@
             margin-top: 0.25rem;
         }
 
-        /* ── Section Common ── */
-        section {
-            padding: 6rem 2rem;
+        /* — Features — */
+        .features {
             max-width: 1100px;
             margin: 0 auto;
+            padding: 2rem 2rem 6rem;
         }
 
-        .section-label {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            color: var(--accent);
-            margin-bottom: 1rem;
-        }
-
-        .section-title {
-            font-size: clamp(1.8rem, 3.5vw, 2.4rem);
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            margin-bottom: 1rem;
-        }
-
-        .section-desc {
-            font-size: 1.05rem;
-            color: var(--text-secondary);
-            max-width: 600px;
-            font-weight: 300;
-            margin-bottom: 3rem;
-        }
-
-        /* ── Problem Cards ── */
-        .problem-grid {
+        .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
         }
 
-        .problem-card {
+        .feature-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
@@ -306,333 +273,29 @@
             transition: all 0.3s ease;
         }
 
-        .problem-card:hover {
+        .feature-card:hover {
             border-color: var(--border-accent);
             transform: translateY(-2px);
         }
 
-        .problem-icon {
+        .feature-icon {
             font-size: 1.8rem;
             margin-bottom: 1rem;
         }
 
-        .problem-card h3 {
+        .feature-card h3 {
             font-size: 1.1rem;
             font-weight: 600;
             margin-bottom: 0.6rem;
         }
 
-        .problem-card p {
+        .feature-card p {
             font-size: 0.9rem;
             color: var(--text-secondary);
             line-height: 1.6;
         }
 
-        /* ── Demo Section ── */
-        #demo {
-            text-align: center;
-        }
-
-        .demo-frame {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 2rem;
-            margin-top: 2rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .demo-frame::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            opacity: 0.5;
-        }
-
-        .demo-mockup {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.2rem;
-            padding: 2rem 0;
-        }
-
-        .demo-mockup-icon {
-            font-size: 3rem;
-        }
-
-        .demo-mockup-text {
-            font-size: 1rem;
-            color: var(--text-secondary);
-        }
-
-        .demo-mockup-text strong {
-            color: var(--text-primary);
-        }
-
-        /* ── Try It Section ── */
-        #try-it {
-            text-align: center;
-        }
-
-        .try-container {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 2.5rem;
-            max-width: 560px;
-            margin: 0 auto;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .try-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--green), transparent);
-            opacity: 0.6;
-        }
-
-        .try-description {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            line-height: 1.7;
-        }
-
-        .try-description code {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.82rem;
-            background: rgba(59, 130, 246, 0.1);
-            color: var(--accent);
-            padding: 0.15rem 0.5rem;
-            border-radius: 4px;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
-            align-items: stretch;
-        }
-
-        .input-field {
-            flex: 1;
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: 0.85rem 1.2rem;
-            color: var(--text-primary);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .input-field::placeholder {
-            color: var(--text-muted);
-        }
-
-        .input-field:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-subtle);
-        }
-
-        .btn-run {
-            background: var(--green);
-            color: #fff;
-            padding: 0.85rem 1.6rem;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            white-space: nowrap;
-            letter-spacing: 0.02em;
-        }
-
-        .btn-run:hover:not(:disabled) {
-            background: #0ea472;
-            box-shadow: 0 0 20px var(--green-glow);
-            transform: translateY(-1px);
-        }
-
-        .btn-run:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .btn-run.loading {
-            position: relative;
-            color: transparent;
-        }
-
-        .btn-run.loading::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 18px;
-            height: 18px;
-            margin: -9px 0 0 -9px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* ── Result Panel ── */
-        .result-panel {
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            text-align: left;
-            transition: all 0.3s ease;
-        }
-
-        .result-panel.success {
-            border-color: rgba(16, 185, 129, 0.3);
-        }
-
-        .result-panel.error {
-            border-color: rgba(239, 68, 68, 0.3);
-        }
-
-        .result-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.6rem 1rem;
-            background: rgba(255, 255, 255, 0.02);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .result-header-left {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .result-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: var(--text-muted);
-        }
-
-        .result-panel.success .result-dot {
-            background: var(--green);
-            box-shadow: 0 0 6px var(--green-glow);
-        }
-
-        .result-panel.error .result-dot {
-            background: var(--red);
-        }
-
-        .result-label {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-        }
-
-        .result-time {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.72rem;
-            color: var(--text-muted);
-        }
-
-        .result-body {
-            padding: 1rem;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-        }
-
-        .result-body pre {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            color: var(--text-primary);
-            line-height: 1.6;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-
-        .result-placeholder {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-style: italic;
-        }
-
-        .result-body .json-key {
-            color: #818cf8;
-        }
-
-        .result-body .json-value-num {
-            color: var(--green);
-        }
-
-        .result-body .json-value-str {
-            color: var(--amber);
-        }
-
-        /* ── Pipeline Diagram ── */
-        .pipeline {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.4rem;
-            margin-top: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .pipeline-step {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-        }
-
-        .pipeline-step .step-icon {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 0.3rem 0.6rem;
-            transition: all 0.3s;
-        }
-
-        .pipeline-step.active .step-icon {
-            border-color: var(--border-accent);
-            background: var(--accent-subtle);
-            color: var(--accent);
-        }
-
-        .pipeline-arrow {
-            color: var(--text-muted);
-            font-size: 0.65rem;
-            opacity: 0.4;
-        }
-
-        /* ── Footer ── */
+        /* — Footer — */
         footer {
             text-align: center;
             padding: 3rem 2rem;
@@ -646,63 +309,21 @@
             text-decoration: none;
         }
 
-        footer a:hover {
-            color: var(--accent);
-        }
+        footer a:hover { color: var(--accent); }
 
-        /* ── Animations ── */
+        /* — Animations — */
         @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-12px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-12px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(16px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .fade-in-up {
-            animation: fadeInUp 0.5s ease both;
-        }
-
-        /* ── Responsive ── */
+        /* — Responsive — */
         @media (max-width: 640px) {
-            nav {
-                padding: 0.8rem 1.2rem;
-            }
-            .nav-links {
-                gap: 1.2rem;
-            }
-            .stats {
-                gap: 1.5rem;
-            }
-            section {
-                padding: 4rem 1.2rem;
-            }
-            .input-group {
-                flex-direction: column;
-            }
-            .try-container {
-                padding: 1.5rem;
-            }
-            .pipeline {
-                gap: 0.3rem;
-            }
-            .pipeline-step {
-                font-size: 0.6rem;
-            }
+            nav { padding: 0.8rem 1.2rem; }
+            .nav-links { gap: 1rem; }
+            .nav-links a { font-size: 0.8rem; }
+            .stats { gap: 1.5rem; }
+            .features { padding: 2rem 1.2rem 4rem; }
         }
     </style>
 </head>
@@ -710,11 +331,13 @@
 
     <!-- Navigation -->
     <nav>
-        <a href="#" class="nav-logo">Open<span>TCAD</span>.dev</a>
+        <a href="index.html" class="nav-logo">Open<span>TCAD</span></a>
         <ul class="nav-links">
-            <li><a href="#about">About</a></li>
-            <li><a href="#demo">Demo</a></li>
-            <li><a href="#try-it">Try It</a></li>
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="emulator.html">Emulator</a></li>
+            <li><a href="docs.html">Docs</a></li>
+            <li><a href="try-it.html">Try It</a></li>
+            <li><a href="about.html">About</a></li>
         </ul>
     </nav>
 
@@ -722,19 +345,18 @@
     <section class="hero">
         <div class="hero-badge">Preview Available</div>
         <h1>Semiconductor Process Emulation, <em>in Your Browser</em></h1>
-        <p class="hero-sub">Real-time 3D visualization of semiconductor fabrication processes. No installation, no expensive licenses. Just open your browser and explore.</p>
+        <p class="hero-sub">Explore 3D semiconductor fabrication processes in minutes — no installation, no license fees. Built for education and research.</p>
         <div class="hero-actions">
-            <a href="demo.html" class="btn btn-primary">Launch 3D Demo ↗</a>
-            <a href="#about" class="btn btn-secondary">Learn More</a>
+            <a href="emulator.html" class="btn btn-primary">▶ Launch Emulator</a>
         </div>
         <div class="stats">
             <div class="stat">
-                <div class="stat-value">~5s</div>
+                <div class="stat-value">~min</div>
                 <div class="stat-label">Emulation Time</div>
             </div>
             <div class="stat">
                 <div class="stat-value">$0</div>
-                <div class="stat-label">License Fee</div>
+                <div class="stat-label">For Students</div>
             </div>
             <div class="stat">
                 <div class="stat-value">3D</div>
@@ -742,207 +364,36 @@
             </div>
             <div class="stat">
                 <div class="stat-value">Web</div>
-                <div class="stat-label">Browser-Based</div>
+                <div class="stat-label">No Install Needed</div>
             </div>
         </div>
     </section>
 
-    <!-- Problem Section -->
-    <section id="about">
-        <div class="section-label">The Problem</div>
-        <h2 class="section-title">TCAD Simulation Shouldn't Be This Hard</h2>
-        <p class="section-desc">Traditional TCAD tools are expensive, slow, and require dedicated workstations. Most universities and researchers can't afford access.</p>
-        <div class="problem-grid">
-            <div class="problem-card">
-                <div class="problem-icon">💰</div>
-                <h3>Prohibitive Cost</h3>
-                <p>Commercial TCAD licenses cost tens of thousands of dollars per year. Most university labs simply cannot afford them.</p>
+    <!-- Features -->
+    <section class="features">
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Minutes, Not Hours</h3>
+                <p>Traditional 3D process simulation takes hours. Our voxel-based emulation engine returns results in minutes, enabling interactive parameter exploration.</p>
             </div>
-            <div class="problem-card">
-                <div class="problem-icon">⏳</div>
-                <h3>Hours Per Simulation</h3>
-                <p>A single 3D process simulation takes hours to complete. Students can't explore parameters interactively during a 50-minute class.</p>
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <h3>Open Your Browser, Start Learning</h3>
+                <p>No workstation, no license server, no IT support needed. Students and researchers can access the full emulator from any device with a web browser.</p>
             </div>
-            <div class="problem-card">
-                <div class="problem-icon">🖥️</div>
-                <h3>Complex Setup</h3>
-                <p>Dedicated workstations, license servers, and IT infrastructure required. Installation alone can take days.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Demo Section -->
-    <section id="demo">
-        <div class="section-label">Live Demo</div>
-        <h2 class="section-title">See It in Action</h2>
-        <p class="section-desc" style="margin-left:auto;margin-right:auto;">Explore an interactive 3D FinFET fabrication process — 7 steps from substrate to source/drain implantation.</p>
-        <div class="demo-frame">
-            <div class="demo-mockup">
-                <div class="demo-mockup-icon">⚛️</div>
-                <div class="demo-mockup-text"><strong>Interactive 3D FinFET Process Viewer</strong><br>Rotate, zoom, cross-section — all in your browser</div>
-                <a href="demo.html" class="btn btn-primary" style="margin-top:0.5rem;">Launch 3D Demo ↗</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Try It Section -->
-    <section id="try-it">
-        <div class="section-label">Try It Now</div>
-        <h2 class="section-title">Cloud Compute, Live</h2>
-        <p class="section-desc" style="margin-left:auto;margin-right:auto;">Send a request to our cloud server and get a response in real time. This is the same pipeline that will power the full process emulator.</p>
-
-        <div class="try-container">
-            <p class="try-description">
-                Enter a number below and hit <strong>Run</strong>. Your input travels to our AWS server, gets processed by a C++ backend, and the result comes back as JSON — the exact <code>Browser → API → C++ → JSON</code> pipeline behind OpenTCAD.
-            </p>
-
-            <div class="input-group">
-                <input type="number" id="inputNumber" class="input-field" placeholder="Enter a number (e.g. 42)" value="42">
-                <button id="runBtn" class="btn-run" onclick="runCalculation()">▶ Run</button>
-            </div>
-
-            <div class="result-panel" id="resultPanel">
-                <div class="result-header">
-                    <div class="result-header-left">
-                        <div class="result-dot"></div>
-                        <span class="result-label">Response</span>
-                    </div>
-                    <span class="result-time" id="resultTime"></span>
-                </div>
-                <div class="result-body" id="resultBody">
-                    <span class="result-placeholder">Result will appear here...</span>
-                </div>
-            </div>
-
-            <div class="pipeline" id="pipeline">
-                <div class="pipeline-step" id="step-browser">
-                    <span class="step-icon">Browser</span>
-                </div>
-                <span class="pipeline-arrow">→</span>
-                <div class="pipeline-step" id="step-api">
-                    <span class="step-icon">FastAPI</span>
-                </div>
-                <span class="pipeline-arrow">→</span>
-                <div class="pipeline-step" id="step-cpp">
-                    <span class="step-icon">C++</span>
-                </div>
-                <span class="pipeline-arrow">→</span>
-                <div class="pipeline-step" id="step-json">
-                    <span class="step-icon">JSON</span>
-                </div>
-                <span class="pipeline-arrow">→</span>
-                <div class="pipeline-step" id="step-render">
-                    <span class="step-icon">Render</span>
-                </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎓</div>
+                <h3>Built for the Classroom</h3>
+                <p>Designed for semiconductor process education. Visualize FinFET, GAA, and other advanced structures step by step. Free for individual students and researchers.</p>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
     <footer>
-        <p><a href="#">OpenTCAD.dev</a> — Cloud-based semiconductor process emulation for education and research.</p>
-        <p style="margin-top:0.5rem;">© 2026 OpenTCAD. All rights reserved.</p>
+        <p>© 2026 OpenTCAD. All rights reserved.</p>
     </footer>
-
-    <script>
-        const API_URL = 'https://api.opentcad.dev/calculate';
-
-        function setActiveStep(stepId) {
-            document.querySelectorAll('.pipeline-step').forEach(s => s.classList.remove('active'));
-            if (stepId) {
-                document.getElementById(stepId).classList.add('active');
-            }
-        }
-
-        function formatJson(obj) {
-            const json = JSON.stringify(obj, null, 2);
-            return json.replace(/"([^"]+)":/g, '<span class="json-key">"$1"</span>:')
-                       .replace(/: (\d+\.?\d*)/g, ': <span class="json-value-num">$1</span>')
-                       .replace(/: "([^"]+)"/g, ': <span class="json-value-str">"$1"</span>');
-        }
-
-        async function runCalculation() {
-            const input = document.getElementById('inputNumber');
-            const btn = document.getElementById('runBtn');
-            const panel = document.getElementById('resultPanel');
-            const body = document.getElementById('resultBody');
-            const timeEl = document.getElementById('resultTime');
-            const number = parseFloat(input.value);
-
-            if (isNaN(number)) {
-                panel.className = 'result-panel error';
-                body.innerHTML = '<pre><span class="json-value-str">Please enter a valid number.</span></pre>';
-                return;
-            }
-
-            // Reset
-            btn.disabled = true;
-            btn.classList.add('loading');
-            btn.textContent = '▶ Run';
-            panel.className = 'result-panel';
-            body.innerHTML = '<span class="result-placeholder">Processing...</span>';
-            timeEl.textContent = '';
-
-            const startTime = performance.now();
-
-            try {
-                // Step 1: Browser
-                setActiveStep('step-browser');
-                await sleep(150);
-
-                // Step 2: API
-                setActiveStep('step-api');
-
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ number: number })
-                });
-
-                // Step 3: C++
-                setActiveStep('step-cpp');
-                await sleep(100);
-
-                if (!response.ok) {
-                    throw new Error(`Server responded with ${response.status}`);
-                }
-
-                const data = await response.json();
-
-                // Step 4: JSON
-                setActiveStep('step-json');
-                await sleep(100);
-
-                // Step 5: Render
-                setActiveStep('step-render');
-
-                const elapsed = ((performance.now() - startTime) / 1000).toFixed(2);
-
-                panel.className = 'result-panel success';
-                body.innerHTML = `<pre>${formatJson(data)}</pre>`;
-                timeEl.textContent = `${elapsed}s`;
-
-            } catch (err) {
-                const elapsed = ((performance.now() - startTime) / 1000).toFixed(2);
-                panel.className = 'result-panel error';
-                body.innerHTML = `<pre><span class="json-value-str">Error: ${err.message}</span>\n\n<span class="json-key">Tip:</span> Make sure the server is running:\n  ssh into EC2 → cd ~/opentcad\n  uvicorn server:app --host 0.0.0.0 --port 8000</pre>`;
-                timeEl.textContent = `${elapsed}s`;
-                setActiveStep(null);
-            } finally {
-                btn.disabled = false;
-                btn.classList.remove('loading');
-            }
-        }
-
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-
-        // Enter key support
-        document.getElementById('inputNumber').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') runCalculation();
-        });
-    </script>
 
 </body>
 </html>
