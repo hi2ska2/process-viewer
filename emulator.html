@@ -523,6 +523,10 @@
             MODEL_URL,
             (gltf) => {
                 const model = gltf.scene;
+
+                // Z-up (OpenTCAD) → Y-up (Three.js) 변환
+                model.rotation.x = -Math.PI / 2;
+
                 scene.add(model);
 
                 // Center the model
