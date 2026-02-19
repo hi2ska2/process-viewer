@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OpenTCAD — Cloud-Based Semiconductor Process Emulation</title>
-    <meta name="description" content="Real-time semiconductor process emulation in your browser. No installation, no license fees. Visualize 3D device structures in seconds.">
-    <!-- Google tag (gtag.js) -->
+    <meta name="description" content="Real-time 3D semiconductor process emulation in your browser. No installation, no expensive licenses.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-QZ407JK5J3"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -13,158 +16,742 @@
       gtag('js', new Date());
       gtag('config', 'G-QZ407JK5J3');
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-primary: #0a0e17;
             --bg-secondary: #111827;
-            --bg-card: #151d2e;
-            --bg-card-hover: #1a2540;
-            --text-primary: #e8ecf4;
-            --text-secondary: #8896b0;
-            --text-dim: #4a5568;
-            --accent: #38bdf8;
-            --accent-glow: rgba(56, 189, 248, 0.15);
-            --accent-secondary: #a78bfa;
-            --border: rgba(136, 150, 176, 0.12);
-            --border-accent: rgba(56, 189, 248, 0.25);
-            --font-body: 'DM Sans', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
+            --bg-card: #1a2236;
+            --bg-card-hover: #1f2a42;
+            --text-primary: #e8edf5;
+            --text-secondary: #8892a8;
+            --text-muted: #5a6478;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.3);
+            --accent-subtle: rgba(59, 130, 246, 0.08);
+            --green: #10b981;
+            --green-glow: rgba(16, 185, 129, 0.3);
+            --amber: #f59e0b;
+            --red: #ef4444;
+            --border: rgba(255, 255, 255, 0.06);
+            --border-accent: rgba(59, 130, 246, 0.2);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --radius-lg: 16px;
         }
 
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body { font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary); line-height: 1.7; overflow-x: hidden; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-        .bg-grid { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: 0; }
-        .bg-glow { position: fixed; width: 800px; height: 800px; border-radius: 50%; filter: blur(120px); opacity: 0.4; pointer-events: none; z-index: 0; }
-        .bg-glow-1 { top: -300px; right: -200px; background: radial-gradient(circle, rgba(56,189,248,0.08), transparent 70%); }
-        .bg-glow-2 { bottom: -400px; left: -300px; background: radial-gradient(circle, rgba(167,139,250,0.06), transparent 70%); }
+        html {
+            scroll-behavior: smooth;
+        }
 
-        nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; background: rgba(10,14,23,0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
-        .nav-logo { font-family: var(--font-mono); font-size: 1.2rem; font-weight: 600; color: var(--text-primary); text-decoration: none; letter-spacing: -0.02em; }
-        .nav-logo span { color: var(--accent); }
-        .nav-links { display: flex; gap: 2rem; list-style: none; }
-        .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.88rem; font-weight: 500; letter-spacing: 0.02em; transition: color 0.3s; }
-        .nav-links a:hover { color: var(--accent); }
+        body {
+            font-family: 'Outfit', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
 
-        .hero { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 8rem 2rem 4rem; }
-        .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1rem; border-radius: 100px; border: 1px solid var(--border-accent); background: var(--accent-glow); font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500; color: var(--accent); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 2rem; animation: fadeInDown 0.8s ease-out; }
-        .hero-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s ease-in-out infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        .hero h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 700; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1.5rem; max-width: 800px; animation: fadeInUp 0.8s ease-out 0.1s both; }
-        .hero h1 .highlight { background: linear-gradient(135deg, var(--accent), var(--accent-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .hero-subtitle { font-size: clamp(1rem, 2vw, 1.25rem); color: var(--text-secondary); max-width: 600px; margin-bottom: 3rem; font-weight: 400; animation: fadeInUp 0.8s ease-out 0.25s both; }
-        .hero-cta-group { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; animation: fadeInUp 0.8s ease-out 0.4s both; }
+        /* ── Navigation ── */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.85rem 2rem; border-radius: 8px; font-family: var(--font-body); font-size: 0.95rem; font-weight: 600; text-decoration: none; transition: all 0.3s; cursor: pointer; border: none; }
-        .btn-primary { background: var(--accent); color: var(--bg-primary); }
-        .btn-primary:hover { background: #5cc8fa; box-shadow: 0 0 30px rgba(56,189,248,0.3); transform: translateY(-1px); }
-        .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--border); }
-        .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+        .nav-logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
 
-        .metrics { position: relative; z-index: 1; display: flex; justify-content: center; gap: 4rem; padding: 3rem 2rem; flex-wrap: wrap; animation: fadeInUp 0.8s ease-out 0.55s both; }
-        .metric { text-align: center; }
-        .metric-value { font-family: var(--font-mono); font-size: 2.2rem; font-weight: 600; color: var(--accent); letter-spacing: -0.02em; }
-        .metric-label { font-size: 0.82rem; color: var(--text-dim); margin-top: 0.3rem; letter-spacing: 0.05em; text-transform: uppercase; }
+        .nav-logo span {
+            color: var(--accent);
+        }
 
-        section { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 6rem 2rem; }
-        .section-label { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; }
-        .section-title { font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1.2rem; line-height: 1.2; }
-        .section-desc { font-size: 1.05rem; color: var(--text-secondary); max-width: 650px; margin-bottom: 3rem; }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
 
-        .problem-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
-        .problem-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; transition: all 0.3s; }
-        .problem-card:hover { background: var(--bg-card-hover); border-color: var(--border-accent); }
-        .problem-icon { font-size: 1.5rem; margin-bottom: 1rem; }
-        .problem-card h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.6rem; }
-        .problem-card p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 400;
+            transition: color 0.2s;
+        }
 
-        .demo-box { margin-top: 2rem; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-card); overflow: hidden; }
-        .demo-box-header { display: flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1.2rem; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.2); }
-        .demo-dot { width: 10px; height: 10px; border-radius: 50%; }
-        .demo-dot:nth-child(1) { background: #ef4444; }
-        .demo-dot:nth-child(2) { background: #f59e42; }
-        .demo-dot:nth-child(3) { background: #22c55e; }
-        .demo-box-url { margin-left: 1rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim); }
-        .demo-box-body { padding: 3rem 2rem; text-align: center; color: var(--text-secondary); }
-        .demo-box-body .demo-icon { font-size: 3rem; margin-bottom: 1rem; }
-        .demo-box-body p { font-size: 0.95rem; margin-bottom: 1.5rem; }
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
 
-        footer { position: relative; z-index: 1; text-align: center; padding: 4rem 2rem; border-top: 1px solid var(--border); }
-        .footer-logo { font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.8rem; }
-        .footer-logo span { color: var(--accent); }
-        .footer-text { font-size: 0.82rem; color: var(--text-dim); }
+        /* ── Hero Section ── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
 
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
-        .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease-out, transform 0.7s ease-out; }
-        .fade-in.visible { opacity: 1; transform: translateY(0); }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            opacity: 0.15;
+            pointer-events: none;
+        }
 
-        @media (max-width: 768px) {
-            nav { padding: 1rem 1.2rem; }
-            .nav-links { gap: 1.2rem; }
-            .nav-links a { font-size: 0.8rem; }
-            .metrics { gap: 2rem; }
-            .metric-value { font-size: 1.8rem; }
-            section { padding: 4rem 1.2rem; }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            background: var(--accent-subtle);
+            border: 1px solid var(--border-accent);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-weight: 500;
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.6s ease;
+        }
+
+        .hero-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.4rem, 5.5vw, 4rem);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            max-width: 750px;
+            margin-bottom: 1.5rem;
+            animation: fadeInDown 0.6s ease 0.1s both;
+        }
+
+        .hero h1 em {
+            font-style: normal;
+            background: linear-gradient(135deg, var(--accent), #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-sub {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            max-width: 540px;
+            margin-bottom: 2.5rem;
+            font-weight: 300;
+            animation: fadeInDown 0.6s ease 0.2s both;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: fadeInDown 0.6s ease 0.3s both;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.8rem;
+            border-radius: var(--radius-sm);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            background: #4f8ff7;
+            box-shadow: 0 0 30px var(--accent-glow);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-accent);
+            transform: translateY(-1px);
+        }
+
+        /* ── Stats Strip ── */
+        .stats {
+            display: flex;
+            gap: 3rem;
+            margin-top: 4rem;
+            animation: fadeInDown 0.6s ease 0.4s both;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-top: 0.25rem;
+        }
+
+        /* ── Section Common ── */
+        section {
+            padding: 6rem 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+
+        .section-desc {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            font-weight: 300;
+            margin-bottom: 3rem;
+        }
+
+        /* ── Problem Cards ── */
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .problem-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .problem-card:hover {
+            border-color: var(--border-accent);
+            transform: translateY(-2px);
+        }
+
+        .problem-icon {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .problem-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+        }
+
+        .problem-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* ── Demo Section ── */
+        #demo {
+            text-align: center;
+        }
+
+        .demo-frame {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-top: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-frame::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.5;
+        }
+
+        .demo-mockup {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.2rem;
+            padding: 2rem 0;
+        }
+
+        .demo-mockup-icon {
+            font-size: 3rem;
+        }
+
+        .demo-mockup-text {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .demo-mockup-text strong {
+            color: var(--text-primary);
+        }
+
+        /* ── Try It Section ── */
+        #try-it {
+            text-align: center;
+        }
+
+        .try-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            max-width: 560px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .try-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--green), transparent);
+            opacity: 0.6;
+        }
+
+        .try-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        .try-description code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            align-items: stretch;
+        }
+
+        .input-field {
+            flex: 1;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0.85rem 1.2rem;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-field::placeholder {
+            color: var(--text-muted);
+        }
+
+        .input-field:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-subtle);
+        }
+
+        .btn-run {
+            background: var(--green);
+            color: #fff;
+            padding: 0.85rem 1.6rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+            letter-spacing: 0.02em;
+        }
+
+        .btn-run:hover:not(:disabled) {
+            background: #0ea472;
+            box-shadow: 0 0 20px var(--green-glow);
+            transform: translateY(-1px);
+        }
+
+        .btn-run:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-run.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn-run.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 18px;
+            height: 18px;
+            margin: -9px 0 0 -9px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ── Result Panel ── */
+        .result-panel {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+
+        .result-panel.success {
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .result-panel.error {
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .result-header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .result-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .result-panel.success .result-dot {
+            background: var(--green);
+            box-shadow: 0 0 6px var(--green-glow);
+        }
+
+        .result-panel.error .result-dot {
+            background: var(--red);
+        }
+
+        .result-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .result-time {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        .result-body {
+            padding: 1rem;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+        }
+
+        .result-body pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .result-placeholder {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .result-body .json-key {
+            color: #818cf8;
+        }
+
+        .result-body .json-value-num {
+            color: var(--green);
+        }
+
+        .result-body .json-value-str {
+            color: var(--amber);
+        }
+
+        /* ── Pipeline Diagram ── */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .pipeline-step {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .pipeline-step .step-icon {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.3rem 0.6rem;
+            transition: all 0.3s;
+        }
+
+        .pipeline-step.active .step-icon {
+            border-color: var(--border-accent);
+            background: var(--accent-subtle);
+            color: var(--accent);
+        }
+
+        .pipeline-arrow {
+            color: var(--text-muted);
+            font-size: 0.65rem;
+            opacity: 0.4;
+        }
+
+        /* ── Footer ── */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: var(--accent);
+        }
+
+        /* ── Animations ── */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease both;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 640px) {
+            nav {
+                padding: 0.8rem 1.2rem;
+            }
+            .nav-links {
+                gap: 1.2rem;
+            }
+            .stats {
+                gap: 1.5rem;
+            }
+            section {
+                padding: 4rem 1.2rem;
+            }
+            .input-group {
+                flex-direction: column;
+            }
+            .try-container {
+                padding: 1.5rem;
+            }
+            .pipeline {
+                gap: 0.3rem;
+            }
+            .pipeline-step {
+                font-size: 0.6rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="bg-grid"></div>
-    <div class="bg-glow bg-glow-1"></div>
-    <div class="bg-glow bg-glow-2"></div>
 
+    <!-- Navigation -->
     <nav>
         <a href="#" class="nav-logo">Open<span>TCAD</span>.dev</a>
         <ul class="nav-links">
             <li><a href="#about">About</a></li>
             <li><a href="#demo">Demo</a></li>
+            <li><a href="#try-it">Try It</a></li>
         </ul>
     </nav>
 
-    <div class="hero">
+    <!-- Hero -->
+    <section class="hero">
         <div class="hero-badge">Preview Available</div>
-        <h1>Semiconductor Process Emulation,<br><span class="highlight">in Your Browser</span></h1>
-        <p class="hero-subtitle">
-            Real-time 3D visualization of semiconductor fabrication processes.
-            No installation, no expensive licenses. Just open your browser and explore.
-        </p>
-        <div class="hero-cta-group">
+        <h1>Semiconductor Process Emulation, <em>in Your Browser</em></h1>
+        <p class="hero-sub">Real-time 3D visualization of semiconductor fabrication processes. No installation, no expensive licenses. Just open your browser and explore.</p>
+        <div class="hero-actions">
             <a href="demo.html" class="btn btn-primary">Launch 3D Demo ↗</a>
-            <a href="#about" class="btn btn-outline">Learn More</a>
+            <a href="#about" class="btn btn-secondary">Learn More</a>
         </div>
-    </div>
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value">~5s</div>
+                <div class="stat-label">Emulation Time</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">$0</div>
+                <div class="stat-label">License Fee</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">3D</div>
+                <div class="stat-label">Interactive Viewer</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">Web</div>
+                <div class="stat-label">Browser-Based</div>
+            </div>
+        </div>
+    </section>
 
-    <div class="metrics">
-        <div class="metric">
-            <div class="metric-value">~5s</div>
-            <div class="metric-label">Emulation Time</div>
-        </div>
-        <div class="metric">
-            <div class="metric-value">$0</div>
-            <div class="metric-label">License Fee</div>
-        </div>
-        <div class="metric">
-            <div class="metric-value">3D</div>
-            <div class="metric-label">Interactive Viewer</div>
-        </div>
-        <div class="metric">
-            <div class="metric-value">Web</div>
-            <div class="metric-label">Browser-Based</div>
-        </div>
-    </div>
-
-    <section id="about" class="fade-in">
+    <!-- Problem Section -->
+    <section id="about">
         <div class="section-label">The Problem</div>
         <h2 class="section-title">TCAD Simulation Shouldn't Be This Hard</h2>
-        <p class="section-desc">
-            Traditional TCAD tools are expensive, slow, and require dedicated workstations.
-            Most universities and researchers can't afford access.
-        </p>
+        <p class="section-desc">Traditional TCAD tools are expensive, slow, and require dedicated workstations. Most universities and researchers can't afford access.</p>
         <div class="problem-grid">
             <div class="problem-card">
                 <div class="problem-icon">💰</div>
@@ -184,43 +771,178 @@
         </div>
     </section>
 
-    <section id="demo" class="fade-in">
+    <!-- Demo Section -->
+    <section id="demo">
         <div class="section-label">Live Demo</div>
         <h2 class="section-title">See It in Action</h2>
-        <p class="section-desc">
-            Explore an interactive 3D FinFET fabrication process — 7 steps from substrate to source/drain implantation.
-        </p>
-        <div class="demo-box">
-            <div class="demo-box-header">
-                <div class="demo-dot"></div>
-                <div class="demo-dot"></div>
-                <div class="demo-dot"></div>
-                <span class="demo-box-url">opentcad.dev/demo</span>
-            </div>
-            <div class="demo-box-body">
-                <div class="demo-icon">⚛️</div>
-                <p>Interactive 3D FinFET Process Viewer<br>
-                <span style="color: var(--text-dim); font-size: 0.85rem;">Rotate, zoom, cross-section — all in your browser</span></p>
-                <a href="demo.html" class="btn btn-primary">Launch 3D Demo ↗</a>
+        <p class="section-desc" style="margin-left:auto;margin-right:auto;">Explore an interactive 3D FinFET fabrication process — 7 steps from substrate to source/drain implantation.</p>
+        <div class="demo-frame">
+            <div class="demo-mockup">
+                <div class="demo-mockup-icon">⚛️</div>
+                <div class="demo-mockup-text"><strong>Interactive 3D FinFET Process Viewer</strong><br>Rotate, zoom, cross-section — all in your browser</div>
+                <a href="demo.html" class="btn btn-primary" style="margin-top:0.5rem;">Launch 3D Demo ↗</a>
             </div>
         </div>
     </section>
 
+    <!-- Try It Section -->
+    <section id="try-it">
+        <div class="section-label">Try It Now</div>
+        <h2 class="section-title">Cloud Compute, Live</h2>
+        <p class="section-desc" style="margin-left:auto;margin-right:auto;">Send a request to our cloud server and get a response in real time. This is the same pipeline that will power the full process emulator.</p>
+
+        <div class="try-container">
+            <p class="try-description">
+                Enter a number below and hit <strong>Run</strong>. Your input travels to our AWS server, gets processed by a C++ backend, and the result comes back as JSON — the exact <code>Browser → API → C++ → JSON</code> pipeline behind OpenTCAD.
+            </p>
+
+            <div class="input-group">
+                <input type="number" id="inputNumber" class="input-field" placeholder="Enter a number (e.g. 42)" value="42">
+                <button id="runBtn" class="btn-run" onclick="runCalculation()">▶ Run</button>
+            </div>
+
+            <div class="result-panel" id="resultPanel">
+                <div class="result-header">
+                    <div class="result-header-left">
+                        <div class="result-dot"></div>
+                        <span class="result-label">Response</span>
+                    </div>
+                    <span class="result-time" id="resultTime"></span>
+                </div>
+                <div class="result-body" id="resultBody">
+                    <span class="result-placeholder">Result will appear here...</span>
+                </div>
+            </div>
+
+            <div class="pipeline" id="pipeline">
+                <div class="pipeline-step" id="step-browser">
+                    <span class="step-icon">Browser</span>
+                </div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-step" id="step-api">
+                    <span class="step-icon">FastAPI</span>
+                </div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-step" id="step-cpp">
+                    <span class="step-icon">C++</span>
+                </div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-step" id="step-json">
+                    <span class="step-icon">JSON</span>
+                </div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-step" id="step-render">
+                    <span class="step-icon">Render</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
     <footer>
-        <div class="footer-logo">Open<span>TCAD</span>.dev</div>
-        <p class="footer-text">Cloud-based semiconductor process emulation for education and research.</p>
-        <p class="footer-text" style="margin-top: 0.5rem;">© 2026 OpenTCAD. All rights reserved.</p>
+        <p><a href="#">OpenTCAD.dev</a> — Cloud-based semiconductor process emulation for education and research.</p>
+        <p style="margin-top:0.5rem;">© 2026 OpenTCAD. All rights reserved.</p>
     </footer>
 
     <script>
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
+        const API_URL = 'http://43.201.67.228:8000/calculate';
+
+        function setActiveStep(stepId) {
+            document.querySelectorAll('.pipeline-step').forEach(s => s.classList.remove('active'));
+            if (stepId) {
+                document.getElementById(stepId).classList.add('active');
+            }
+        }
+
+        function formatJson(obj) {
+            const json = JSON.stringify(obj, null, 2);
+            return json.replace(/"([^"]+)":/g, '<span class="json-key">"$1"</span>:')
+                       .replace(/: (\d+\.?\d*)/g, ': <span class="json-value-num">$1</span>')
+                       .replace(/: "([^"]+)"/g, ': <span class="json-value-str">"$1"</span>');
+        }
+
+        async function runCalculation() {
+            const input = document.getElementById('inputNumber');
+            const btn = document.getElementById('runBtn');
+            const panel = document.getElementById('resultPanel');
+            const body = document.getElementById('resultBody');
+            const timeEl = document.getElementById('resultTime');
+            const number = parseFloat(input.value);
+
+            if (isNaN(number)) {
+                panel.className = 'result-panel error';
+                body.innerHTML = '<pre><span class="json-value-str">Please enter a valid number.</span></pre>';
+                return;
+            }
+
+            // Reset
+            btn.disabled = true;
+            btn.classList.add('loading');
+            btn.textContent = '▶ Run';
+            panel.className = 'result-panel';
+            body.innerHTML = '<span class="result-placeholder">Processing...</span>';
+            timeEl.textContent = '';
+
+            const startTime = performance.now();
+
+            try {
+                // Step 1: Browser
+                setActiveStep('step-browser');
+                await sleep(150);
+
+                // Step 2: API
+                setActiveStep('step-api');
+
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ number: number })
+                });
+
+                // Step 3: C++
+                setActiveStep('step-cpp');
+                await sleep(100);
+
+                if (!response.ok) {
+                    throw new Error(`Server responded with ${response.status}`);
                 }
-            });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+                const data = await response.json();
+
+                // Step 4: JSON
+                setActiveStep('step-json');
+                await sleep(100);
+
+                // Step 5: Render
+                setActiveStep('step-render');
+
+                const elapsed = ((performance.now() - startTime) / 1000).toFixed(2);
+
+                panel.className = 'result-panel success';
+                body.innerHTML = `<pre>${formatJson(data)}</pre>`;
+                timeEl.textContent = `${elapsed}s`;
+
+            } catch (err) {
+                const elapsed = ((performance.now() - startTime) / 1000).toFixed(2);
+                panel.className = 'result-panel error';
+                body.innerHTML = `<pre><span class="json-value-str">Error: ${err.message}</span>\n\n<span class="json-key">Tip:</span> Make sure the server is running:\n  ssh into EC2 → cd ~/opentcad\n  uvicorn server:app --host 0.0.0.0 --port 8000</pre>`;
+                timeEl.textContent = `${elapsed}s`;
+                setActiveStep(null);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('loading');
+            }
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Enter key support
+        document.getElementById('inputNumber').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') runCalculation();
+        });
     </script>
+
 </body>
 </html>
