@@ -529,16 +529,19 @@
 
                 scene.add(model);
 
-                // Center the model
+                // Use original coordinates — only adjust camera to fit
                 const box = new THREE.Box3().setFromObject(model);
                 const center = box.getCenter(new THREE.Vector3());
                 const size = box.getSize(new THREE.Vector3());
-                model.position.sub(center);
-                controls.target.set(0, 0, 0);
+                controls.target.copy(center);
 
                 // Fit camera
                 const maxDim = Math.max(size.x, size.y, size.z);
-                camera.position.set(maxDim * 1.5, maxDim * 1.2, maxDim * 1.5);
+                camera.position.set(
+                    center.x + maxDim * 1.5,
+                    center.y + maxDim * 1.2,
+                    center.z + maxDim * 1.5
+                );
                 controls.update();
 
                 // Count meshes and vertices
@@ -577,10 +580,15 @@
             if (btn.textContent === 'Reset View') {
                 btn.addEventListener('click', () => {
                     const box = new THREE.Box3().setFromObject(scene);
+                    const center = box.getCenter(new THREE.Vector3());
                     const size = box.getSize(new THREE.Vector3());
                     const maxDim = Math.max(size.x, size.y, size.z);
-                    camera.position.set(maxDim * 1.5, maxDim * 1.2, maxDim * 1.5);
-                    controls.target.set(0, 0, 0);
+                    camera.position.set(
+                        center.x + maxDim * 1.5,
+                        center.y + maxDim * 1.2,
+                        center.z + maxDim * 1.5
+                    );
+                    controls.target.copy(center);
                     controls.update();
                 });
             }
