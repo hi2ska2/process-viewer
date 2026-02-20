@@ -53,7 +53,7 @@
             overflow: hidden;
         }
 
-        /* — Compact Navigation — */
+        /* — Navigation — */
         nav {
             padding: 0.6rem 1.5rem;
             background: rgba(10, 14, 23, 0.95);
@@ -116,6 +116,11 @@
             border-bottom: 1px solid var(--border);
         }
 
+        .sidebar-section.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
         .sidebar-title {
             font-size: 0.7rem;
             font-weight: 600;
@@ -123,6 +128,10 @@
             text-transform: uppercase;
             letter-spacing: 0.08em;
             margin-bottom: 0.8rem;
+        }
+
+        .sidebar-title.success {
+            color: var(--green);
         }
 
         .input-row {
@@ -135,7 +144,7 @@
         .input-label {
             font-size: 0.78rem;
             color: var(--text-secondary);
-            width: 85px;
+            width: 95px;
             flex-shrink: 0;
         }
 
@@ -150,27 +159,41 @@
             font-size: 0.78rem;
             outline: none;
             transition: border-color 0.2s;
+            max-width: 80px;
         }
 
         .input-field:focus {
             border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-subtle);
         }
 
-        .input-select {
-            flex: 1;
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
+        .input-field:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .input-field.invalid {
+            border-color: var(--red);
+        }
+
+        .input-hint {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+        }
+
+        .input-valid {
+            font-size: 0.7rem;
+            color: var(--green);
+        }
+
+        .steps-placeholder {
+            padding: 0.6rem;
+            border: 1px dashed var(--border);
             border-radius: 4px;
-            padding: 0.4rem 0.6rem;
-            color: var(--text-primary);
-            font-family: 'Outfit', sans-serif;
-            font-size: 0.78rem;
-            outline: none;
-            cursor: pointer;
-        }
-
-        .step-list {
-            list-style: none;
+            text-align: center;
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            line-height: 1.6;
         }
 
         .step-item {
@@ -184,16 +207,14 @@
             gap: 0.4rem;
         }
 
-        .step-number {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            width: 16px;
+        .step-item .step-check {
+            color: var(--green);
+            font-size: 0.7rem;
         }
 
-        .btn-run {
+        .btn-create {
             width: 100%;
-            background: var(--green);
+            background: var(--accent);
             color: #fff;
             border: none;
             border-radius: var(--radius-sm);
@@ -206,14 +227,52 @@
             letter-spacing: 0.02em;
         }
 
-        .btn-run:hover {
-            background: #0ea472;
-            box-shadow: 0 0 20px var(--green-glow);
+        .btn-create:hover:not(:disabled) {
+            background: #4f8ff7;
+            box-shadow: 0 0 20px var(--accent-glow);
         }
+
+        .btn-create:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .btn-create.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn-create.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 18px;
+            height: 18px;
+            margin: -9px 0 0 -9px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         .sidebar-bottom {
             padding: 1rem 1.2rem;
             margin-top: auto;
+        }
+
+        .btn-hint {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        .voxel-count {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
         }
 
         /* — Main Area — */
@@ -224,7 +283,6 @@
             overflow: hidden;
         }
 
-        /* Toolbar */
         .toolbar {
             display: flex;
             align-items: center;
@@ -254,7 +312,6 @@
 
         .toolbar-spacer { flex: 1; }
 
-        /* 3D Viewer */
         .viewer-area {
             flex: 1;
             background: #0d1117;
@@ -271,29 +328,29 @@
             display: block;
         }
 
-        /* Status Bar */
-        .status-bar {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            padding: 0.4rem 1rem;
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border);
-            font-size: 0.7rem;
+        .empty-state {
+            text-align: center;
             color: var(--text-muted);
-            flex-shrink: 0;
+            position: absolute;
+            z-index: 5;
         }
 
-        .status-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--green);
+        .empty-state.hidden { display: none; }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            opacity: 0.4;
+            margin-bottom: 0.8rem;
         }
 
-        .status-spacer { flex: 1; }
+        .empty-state-text { font-size: 1rem; }
 
-        /* — Loading overlay — */
+        .empty-state-hint {
+            font-size: 0.8rem;
+            opacity: 0.5;
+            margin-top: 0.3rem;
+        }
+
         .viewer-loading {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -321,14 +378,32 @@
             animation: spin 0.8s linear infinite;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
-
         .loading-text {
             font-size: 0.85rem;
             color: var(--text-muted);
         }
 
-        /* — Responsive — */
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.4rem 1rem;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .status-spacer { flex: 1; }
+
         @media (max-width: 768px) {
             .app-layout { flex-direction: column; }
             .sidebar {
@@ -342,110 +417,89 @@
 </head>
 <body>
 
-    <!-- Compact Navigation -->
+    <!-- Navigation -->
     <nav>
         <a href="index.html" class="nav-logo">Open<span>TCAD</span></a>
         <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
             <li><a href="emulator.html" class="active">Emulator</a></li>
             <li><a href="docs.html">Docs</a></li>
             <li><a href="try-it.html">Try It</a></li>
+            <li><a href="about.html">About</a></li>
         </ul>
     </nav>
 
     <!-- App Layout -->
     <div class="app-layout">
 
-        <!-- Left Sidebar: Recipe Input -->
+        <!-- Left Sidebar -->
         <div class="sidebar">
-
-            <div class="sidebar-section">
-                <div class="sidebar-title">📋 Process Recipe</div>
+            <div class="sidebar-section" id="sectionProject">
+                <div class="sidebar-title" id="projectTitle">📐 New Project</div>
                 <div class="input-row">
-                    <span class="input-label">Structure</span>
-                    <select class="input-select">
-                        <option>FinFET</option>
-                        <option disabled>GAA Nanosheet (coming soon)</option>
-                        <option disabled>Planar (coming soon)</option>
-                    </select>
+                    <span class="input-label">nx (width)</span>
+                    <input type="number" class="input-field" id="inputNx" min="1" max="128" placeholder="e.g. 10">
+                    <span class="input-hint" id="hintNx">1–128</span>
                 </div>
                 <div class="input-row">
-                    <span class="input-label">Fin Width</span>
-                    <input type="number" class="input-field" value="7" disabled> <span style="font-size:0.7rem; color:var(--text-muted);">nm</span>
+                    <span class="input-label">ny (depth)</span>
+                    <input type="number" class="input-field" id="inputNy" min="1" max="128" placeholder="e.g. 10">
+                    <span class="input-hint" id="hintNy">1–128</span>
                 </div>
                 <div class="input-row">
-                    <span class="input-label">Fin Height</span>
-                    <input type="number" class="input-field" value="45" disabled> <span style="font-size:0.7rem; color:var(--text-muted);">nm</span>
+                    <span class="input-label">nz (height)</span>
+                    <input type="number" class="input-field" id="inputNz" min="1" max="128" placeholder="e.g. 5">
+                    <span class="input-hint" id="hintNz">1–128</span>
                 </div>
                 <div class="input-row">
-                    <span class="input-label">Fin Pitch</span>
-                    <input type="number" class="input-field" value="30" disabled> <span style="font-size:0.7rem; color:var(--text-muted);">nm</span>
-                </div>
-                <div class="input-row">
-                    <span class="input-label">Gate Length</span>
-                    <input type="number" class="input-field" value="12" disabled> <span style="font-size:0.7rem; color:var(--text-muted);">nm</span>
-                </div>
-                <div class="input-row">
-                    <span class="input-label">Gate Oxide</span>
-                    <input type="number" class="input-field" value="1.2" disabled> <span style="font-size:0.7rem; color:var(--text-muted);">nm</span>
+                    <span class="input-label">nthickness</span>
+                    <input type="number" class="input-field" id="inputNthickness" min="1" placeholder="e.g. 3">
+                    <span class="input-hint" id="hintNthickness">≤ nz</span>
                 </div>
             </div>
 
-            <div class="sidebar-section">
+            <div class="sidebar-section disabled" id="sectionSteps">
                 <div class="sidebar-title">🔧 Process Steps</div>
-                <ul class="step-list">
-                    <li class="step-item"><span class="step-number">1.</span> Oxidation</li>
-                    <li class="step-item"><span class="step-number">2.</span> Deposition (SiN)</li>
-                    <li class="step-item"><span class="step-number">3.</span> Etch (Fin Patterning)</li>
-                    <li class="step-item"><span class="step-number">4.</span> STI Fill</li>
-                    <li class="step-item"><span class="step-number">5.</span> Gate Oxide</li>
-                    <li class="step-item"><span class="step-number">6.</span> Gate Formation</li>
-                    <li class="step-item"><span class="step-number">7.</span> S/D Implantation</li>
-                </ul>
-            </div>
-
-            <div class="sidebar-section">
-                <div class="sidebar-title">⚙️ Mesh Resolution</div>
-                <div class="input-row">
-                    <span class="input-label">nx × ny × nz</span>
-                    <input type="text" class="input-field" value="128 × 64 × 64" disabled>
+                <div class="steps-placeholder" id="stepsPlaceholder">
+                    Create a wafer first,<br>then add process steps.
                 </div>
+                <div id="stepsList" style="display:none;"></div>
             </div>
 
             <div class="sidebar-bottom">
-                <button class="btn-run" disabled style="opacity:0.5; cursor:not-allowed;">▶ Run Emulation</button>
-                <p style="font-size:0.65rem; color:var(--text-muted); text-align:center; margin-top:0.5rem;">Emulator engine coming soon</p>
+                <button class="btn-create" id="btnCreate" disabled>▶ Create Wafer</button>
+                <p class="btn-hint" id="btnHint">Enter nx, ny, nz, and nthickness</p>
             </div>
         </div>
 
         <!-- Right: 3D Viewer -->
         <div class="main-area">
-
             <div class="toolbar">
-                <button class="toolbar-btn">Rotate</button>
-                <button class="toolbar-btn">Pan</button>
-                <button class="toolbar-btn">Cross-section</button>
-                <button class="toolbar-btn">Reset View</button>
+                <button class="toolbar-btn" id="btnResetView">Reset View</button>
                 <div class="toolbar-spacer"></div>
-                <button class="toolbar-btn">Export glTF</button>
+                <button class="toolbar-btn" id="btnExport">Export glTF</button>
             </div>
 
             <div class="viewer-area" id="viewerArea">
-                <div class="viewer-loading" id="viewerLoading">
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-state-icon">📐</div>
+                    <div class="empty-state-text">Start a new project</div>
+                    <div class="empty-state-hint">Set nx, ny, nz, and nthickness to create your wafer.</div>
+                </div>
+                <div class="viewer-loading hidden" id="viewerLoading">
                     <div class="loading-spinner"></div>
-                    <div class="loading-text">Loading 3D model...</div>
+                    <div class="loading-text" id="loadingText">Creating wafer...</div>
                 </div>
                 <canvas id="threeCanvas"></canvas>
             </div>
 
             <div class="status-bar">
                 <div class="status-dot" id="statusDot"></div>
-                <span id="statusText">Loading...</span>
+                <span id="statusText">No project</span>
                 <div class="status-spacer"></div>
-                <span id="statusMeshes">Meshes: —</span>
-                <span style="margin-left:0.8rem;" id="statusVertices">Vertices: —</span>
+                <span id="statusInfo"></span>
             </div>
         </div>
-
     </div>
 
     <!-- Three.js -->
@@ -458,54 +512,58 @@
     </script>
     <script type="module">
         import * as THREE from 'three';
-
-        // OrbitControls and GLTFLoader via CDN (r160)
         const { OrbitControls } = await import('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js');
         const { GLTFLoader } = await import('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js');
 
-        const MODEL_URL = 'https://api.opentcad.dev/models/wafer.gltf';
+        const API_BASE = 'https://api.opentcad.dev';
 
-        const canvas = document.getElementById('threeCanvas');
-        const container = document.getElementById('viewerArea');
-        const loading = document.getElementById('viewerLoading');
+        // --- DOM ---
+        const inputNx = document.getElementById('inputNx');
+        const inputNy = document.getElementById('inputNy');
+        const inputNz = document.getElementById('inputNz');
+        const inputNthickness = document.getElementById('inputNthickness');
+        const hintNx = document.getElementById('hintNx');
+        const hintNy = document.getElementById('hintNy');
+        const hintNz = document.getElementById('hintNz');
+        const hintNthickness = document.getElementById('hintNthickness');
+        const btnCreate = document.getElementById('btnCreate');
+        const btnHint = document.getElementById('btnHint');
+        const projectTitle = document.getElementById('projectTitle');
+        const sectionSteps = document.getElementById('sectionSteps');
+        const stepsPlaceholder = document.getElementById('stepsPlaceholder');
+        const stepsList = document.getElementById('stepsList');
+        const emptyState = document.getElementById('emptyState');
+        const viewerLoading = document.getElementById('viewerLoading');
+        const loadingText = document.getElementById('loadingText');
         const statusDot = document.getElementById('statusDot');
         const statusText = document.getElementById('statusText');
-        const statusMeshes = document.getElementById('statusMeshes');
-        const statusVertices = document.getElementById('statusVertices');
+        const statusInfo = document.getElementById('statusInfo');
 
-        // Renderer
+        // --- Three.js ---
+        const canvas = document.getElementById('threeCanvas');
+        const container = document.getElementById('viewerArea');
+
         const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setClearColor(0x0d1117);
         renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-        // Scene
         const scene = new THREE.Scene();
-
-        // Camera
         const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
         camera.position.set(15, 12, 15);
 
-        // Controls
         const controls = new OrbitControls(camera, canvas);
         controls.enableDamping = true;
         controls.dampingFactor = 0.08;
 
-        // Lights
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-        scene.add(ambientLight);
-
-        const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
-        dirLight.position.set(10, 15, 10);
-        scene.add(dirLight);
-
+        scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+        const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.0);
+        dirLight1.position.set(10, 15, 10);
+        scene.add(dirLight1);
         const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.3);
         dirLight2.position.set(-5, 5, -5);
         scene.add(dirLight2);
 
-        // Grid will be created dynamically after model loads
-
-        // Resize handler
         function resize() {
             const w = container.clientWidth;
             const h = container.clientHeight;
@@ -514,99 +572,240 @@
             camera.updateProjectionMatrix();
         }
         window.addEventListener('resize', resize);
-
-        // Load glTF model
-        const loader = new GLTFLoader();
-        loader.load(
-            MODEL_URL,
-            (gltf) => {
-                const model = gltf.scene;
-
-                // Z-up (OpenTCAD) → Y-up (Three.js) 변환
-                model.rotation.x = -Math.PI / 2;
-
-                scene.add(model);
-
-                // Dynamic grid based on model bounding box
-                const box = new THREE.Box3().setFromObject(model);
-                const center = box.getCenter(new THREE.Vector3());
-                const size = box.getSize(new THREE.Vector3());
-
-                const gridSpan = Math.max(size.x, size.z) * 1.5; // 50% margin
-                const gridDiv = Math.round(gridSpan);
-                const gridHelper = new THREE.GridHelper(gridSpan, gridDiv, 0x222244, 0x171730);
-                gridHelper.position.set(center.x, box.min.y, center.z); // grid at model bottom
-                scene.add(gridHelper);
-
-                controls.target.copy(center);
-
-                // Fit camera
-                const maxDim = Math.max(size.x, size.y, size.z);
-                camera.position.set(
-                    center.x + maxDim * 1.5,
-                    center.y + maxDim * 1.2,
-                    center.z + maxDim * 1.5
-                );
-                controls.update();
-
-                // Count meshes and vertices
-                let meshCount = 0;
-                let vertexCount = 0;
-                model.traverse((child) => {
-                    if (child.isMesh) {
-                        meshCount++;
-                        vertexCount += child.geometry.attributes.position.count;
-                    }
-                });
-
-                // Update status
-                statusDot.style.background = '#10b981';
-                statusText.textContent = 'Model loaded';
-                statusMeshes.textContent = `Meshes: ${meshCount}`;
-                statusVertices.textContent = `Vertices: ${vertexCount.toLocaleString()}`;
-
-                // Hide loading
-                loading.classList.add('hidden');
-            },
-            (progress) => {
-                // Loading progress
-            },
-            (error) => {
-                console.error('glTF load error:', error);
-                statusDot.style.background = '#ef4444';
-                statusText.textContent = 'Failed to load model';
-                loading.querySelector('.loading-text').textContent = 'Failed to load model. Server may be offline.';
-                loading.querySelector('.loading-spinner').style.display = 'none';
-            }
-        );
-
-        // Reset View button
-        document.querySelector('.toolbar-btn').parentElement.querySelectorAll('.toolbar-btn').forEach(btn => {
-            if (btn.textContent === 'Reset View') {
-                btn.addEventListener('click', () => {
-                    const box = new THREE.Box3().setFromObject(scene);
-                    const center = box.getCenter(new THREE.Vector3());
-                    const size = box.getSize(new THREE.Vector3());
-                    const maxDim = Math.max(size.x, size.y, size.z);
-                    camera.position.set(
-                        center.x + maxDim * 1.5,
-                        center.y + maxDim * 1.2,
-                        center.z + maxDim * 1.5
-                    );
-                    controls.target.copy(center);
-                    controls.update();
-                });
-            }
-        });
-
-        // Render loop
         resize();
+
         function animate() {
             requestAnimationFrame(animate);
             controls.update();
             renderer.render(scene, camera);
         }
         animate();
+
+        // --- State ---
+        let sessionId = null;
+        let currentModel = null;
+        let currentGrid = null;
+
+        // --- Validation ---
+        function validateField(input, hintEl, min, max) {
+            const val = parseInt(input.value);
+            if (input.value === '') {
+                hintEl.textContent = `${min}–${max}`;
+                hintEl.className = 'input-hint';
+                input.classList.remove('invalid');
+                return false;
+            }
+            if (isNaN(val) || val < min || val > max) {
+                hintEl.textContent = `${min}–${max}`;
+                hintEl.className = 'input-hint';
+                input.classList.add('invalid');
+                return false;
+            }
+            hintEl.textContent = '✓';
+            hintEl.className = 'input-valid';
+            input.classList.remove('invalid');
+            return true;
+        }
+
+        function validateNthickness() {
+            const nz = parseInt(inputNz.value);
+            const nt = parseInt(inputNthickness.value);
+            if (inputNthickness.value === '') {
+                hintNthickness.textContent = '≤ nz';
+                hintNthickness.className = 'input-hint';
+                inputNthickness.classList.remove('invalid');
+                return false;
+            }
+            if (isNaN(nt) || nt < 1 || isNaN(nz) || nt > nz) {
+                hintNthickness.textContent = '≤ nz';
+                hintNthickness.className = 'input-hint';
+                inputNthickness.classList.add('invalid');
+                return false;
+            }
+            hintNthickness.textContent = '✓';
+            hintNthickness.className = 'input-valid';
+            inputNthickness.classList.remove('invalid');
+            return true;
+        }
+
+        function validateAll() {
+            const a = validateField(inputNx, hintNx, 1, 128);
+            const b = validateField(inputNy, hintNy, 1, 128);
+            const c = validateField(inputNz, hintNz, 1, 128);
+            const d = validateNthickness();
+
+            if (a && b && c && d) {
+                const nx = parseInt(inputNx.value);
+                const ny = parseInt(inputNy.value);
+                const nz = parseInt(inputNz.value);
+                const total = nx * ny * nz;
+                btnCreate.disabled = false;
+                btnHint.innerHTML = `${nx} × ${ny} × ${nz} = <span class="voxel-count">${total.toLocaleString()} voxels</span>`;
+            } else {
+                btnCreate.disabled = true;
+                btnHint.textContent = 'Enter nx, ny, nz, and nthickness';
+            }
+        }
+
+        inputNx.addEventListener('input', validateAll);
+        inputNy.addEventListener('input', validateAll);
+        inputNz.addEventListener('input', validateAll);
+        inputNthickness.addEventListener('input', validateAll);
+
+        // --- Load glTF into scene ---
+        function loadModel(gltfUrl) {
+            return new Promise((resolve, reject) => {
+                const loader = new GLTFLoader();
+                loader.load(gltfUrl, resolve, undefined, reject);
+            });
+        }
+
+        function displayModel(gltf) {
+            if (currentModel) scene.remove(currentModel);
+            if (currentGrid) scene.remove(currentGrid);
+
+            const model = gltf.scene;
+            model.rotation.x = -Math.PI / 2; // Z-up → Y-up
+            scene.add(model);
+            currentModel = model;
+
+            // Dynamic grid
+            const box = new THREE.Box3().setFromObject(model);
+            const center = box.getCenter(new THREE.Vector3());
+            const size = box.getSize(new THREE.Vector3());
+            const gridSpan = Math.max(size.x, size.z) * 1.5;
+            const gridDiv = Math.max(Math.round(gridSpan), 1);
+            const grid = new THREE.GridHelper(gridSpan, gridDiv, 0x222244, 0x171730);
+            grid.position.set(center.x, box.min.y, center.z);
+            scene.add(grid);
+            currentGrid = grid;
+
+            // Camera
+            controls.target.copy(center);
+            const maxDim = Math.max(size.x, size.y, size.z);
+            camera.position.set(
+                center.x + maxDim * 1.5,
+                center.y + maxDim * 1.2,
+                center.z + maxDim * 1.5
+            );
+            controls.update();
+
+            // Count
+            let meshCount = 0, vertexCount = 0;
+            model.traverse((child) => {
+                if (child.isMesh) {
+                    meshCount++;
+                    vertexCount += child.geometry.attributes.position.count;
+                }
+            });
+
+            return { meshCount, vertexCount };
+        }
+
+        // --- Create Wafer ---
+        btnCreate.addEventListener('click', async () => {
+            const nx = parseInt(inputNx.value);
+            const ny = parseInt(inputNy.value);
+            const nz = parseInt(inputNz.value);
+            const nthickness = parseInt(inputNthickness.value);
+
+            // UI: loading
+            btnCreate.disabled = true;
+            btnCreate.classList.add('loading');
+            emptyState.classList.add('hidden');
+            viewerLoading.classList.remove('hidden');
+            loadingText.textContent = 'Creating wafer...';
+            statusDot.style.background = '';
+            statusText.textContent = 'Creating...';
+            statusInfo.textContent = '';
+
+            try {
+                // POST to server
+                const response = await fetch(`${API_BASE}/create_wafer`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        statement: 'craft',
+                        name: 'wafer',
+                        nx: nx,
+                        ny: ny,
+                        nz: nz,
+                        region: 'Silicon',
+                        nthickness: nthickness
+                    })
+                });
+
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(`Server error ${response.status}: ${errText}`);
+                }
+
+                const data = await response.json();
+                sessionId = data.session_id;
+                const gltfUrl = `${API_BASE}${data.gltf_url}`;
+
+                // Load and display glTF
+                loadingText.textContent = 'Loading 3D model...';
+                const gltf = await loadModel(gltfUrl);
+                const { meshCount, vertexCount } = displayModel(gltf);
+
+                // UI: success
+                viewerLoading.classList.add('hidden');
+                statusDot.style.background = '#10b981';
+                statusText.textContent = 'Wafer created';
+                statusInfo.textContent = `Voxels: ${nx}×${ny}×${nz} (${(nx*ny*nz).toLocaleString()})  |  Meshes: ${meshCount}  |  Vertices: ${vertexCount.toLocaleString()}`;
+
+                // Lock inputs
+                inputNx.disabled = true;
+                inputNy.disabled = true;
+                inputNz.disabled = true;
+                inputNthickness.disabled = true;
+                projectTitle.textContent = `✓ Wafer (${nx}×${ny}×${nz})`;
+                projectTitle.classList.add('success');
+
+                // Enable process steps
+                sectionSteps.classList.remove('disabled');
+                stepsPlaceholder.style.display = 'none';
+                stepsList.style.display = 'block';
+                stepsList.innerHTML = `
+                    <div class="step-item">
+                        <span class="step-check">✓</span>
+                        0. Initial wafer (Silicon, nthickness=${nthickness})
+                    </div>
+                `;
+
+                // Hide create button
+                btnCreate.style.display = 'none';
+                btnHint.textContent = '';
+
+            } catch (err) {
+                console.error('Create wafer error:', err);
+                viewerLoading.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                statusDot.style.background = '#ef4444';
+                statusText.textContent = 'Error';
+                statusInfo.textContent = err.message;
+                btnCreate.disabled = false;
+            } finally {
+                btnCreate.classList.remove('loading');
+            }
+        });
+
+        // --- Reset View ---
+        document.getElementById('btnResetView').addEventListener('click', () => {
+            if (!currentModel) return;
+            const box = new THREE.Box3().setFromObject(currentModel);
+            const center = box.getCenter(new THREE.Vector3());
+            const size = box.getSize(new THREE.Vector3());
+            const maxDim = Math.max(size.x, size.y, size.z);
+            camera.position.set(
+                center.x + maxDim * 1.5,
+                center.y + maxDim * 1.2,
+                center.z + maxDim * 1.5
+            );
+            controls.target.copy(center);
+            controls.update();
+        });
     </script>
 
 </body>
