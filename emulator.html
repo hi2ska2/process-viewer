@@ -196,6 +196,95 @@
             line-height: 1.6;
         }
 
+        .step-form-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 0.8rem 0;
+        }
+
+        .step-form-title {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 0.7rem;
+        }
+
+        .input-select {
+            flex: 1;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 0.4rem 0.6rem;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            outline: none;
+            transition: border-color 0.2s;
+            max-width: 120px;
+            cursor: pointer;
+        }
+
+        .input-select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-subtle);
+        }
+
+        .input-field-text {
+            max-width: 120px;
+        }
+
+        .btn-run-step {
+            width: 100%;
+            background: var(--green);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 0.6rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            letter-spacing: 0.02em;
+            margin-top: 0.6rem;
+        }
+
+        .btn-run-step:hover:not(:disabled) {
+            background: #0ea472;
+            box-shadow: 0 0 20px var(--green-glow);
+        }
+
+        .btn-run-step:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .btn-run-step.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn-run-step.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            margin: -8px 0 0 -8px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        .step-form-hint {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 0.4rem;
+        }
+
         .step-item {
             font-size: 0.75rem;
             color: var(--text-secondary);
@@ -464,6 +553,31 @@
                     Create a wafer first,<br>then add process steps.
                 </div>
                 <div id="stepsList" style="display:none;"></div>
+
+                <!-- Add Step Form -->
+                <div id="addStepForm" style="display:none;">
+                    <div class="step-form-divider"></div>
+                    <div class="step-form-title">+ Add Step</div>
+                    <div class="input-row">
+                        <span class="input-label">Type</span>
+                        <select class="input-select" id="stepType">
+                            <option value="depo">Deposition</option>
+                            <option value="etch">Etch</option>
+                        </select>
+                    </div>
+                    <div class="input-row">
+                        <span class="input-label">Region</span>
+                        <input type="text" class="input-field input-field-text" id="stepRegion" placeholder="e.g. SiO2" list="regionList">
+                        <datalist id="regionList"></datalist>
+                    </div>
+                    <div class="input-row">
+                        <span class="input-label">Thickness</span>
+                        <input type="number" class="input-field" id="stepThickness" min="1" max="128" placeholder="nthickness">
+                        <span class="input-hint" id="hintStepThickness">1–128</span>
+                    </div>
+                    <button class="btn-run-step" id="btnRunStep" disabled>▶ Run Step</button>
+                    <p class="step-form-hint" id="stepFormHint">Enter region and thickness</p>
+                </div>
             </div>
 
             <div class="sidebar-bottom">
@@ -585,6 +699,18 @@
         let sessionId = null;
         let currentModel = null;
         let currentGrid = null;
+        let stepCount = 0;
+        let usedRegions = new Set();
+
+        // --- Add Step Form DOM ---
+        const addStepForm = document.getElementById('addStepForm');
+        const stepType = document.getElementById('stepType');
+        const stepRegion = document.getElementById('stepRegion');
+        const stepThickness = document.getElementById('stepThickness');
+        const hintStepThickness = document.getElementById('hintStepThickness');
+        const btnRunStep = document.getElementById('btnRunStep');
+        const stepFormHint = document.getElementById('stepFormHint');
+        const regionList = document.getElementById('regionList');
 
         // --- Validation ---
         function validateField(input, hintEl, min, max) {
@@ -773,6 +899,14 @@
                         0. Initial wafer (Silicon, nthickness=${nthickness})
                     </div>
                 `;
+                stepCount = 1;
+
+                // Track used regions and update autocomplete
+                usedRegions.add('Silicon');
+                updateRegionList();
+
+                // Show add step form
+                addStepForm.style.display = 'block';
 
                 // Hide create button
                 btnCreate.style.display = 'none';
@@ -805,6 +939,132 @@
             );
             controls.target.copy(center);
             controls.update();
+        });
+
+        // --- Region Autocomplete ---
+        function updateRegionList() {
+            regionList.innerHTML = '';
+            usedRegions.forEach(r => {
+                const opt = document.createElement('option');
+                opt.value = r;
+                regionList.appendChild(opt);
+            });
+        }
+
+        // --- Step Form Validation ---
+        function validateStepForm() {
+            const region = stepRegion.value.trim();
+            const thickness = parseInt(stepThickness.value);
+            const thicknessValid = !isNaN(thickness) && thickness >= 1 && thickness <= 128;
+
+            if (thicknessValid) {
+                hintStepThickness.textContent = '✓';
+                hintStepThickness.className = 'input-valid';
+                stepThickness.classList.remove('invalid');
+            } else if (stepThickness.value !== '') {
+                hintStepThickness.textContent = '1–128';
+                hintStepThickness.className = 'input-hint';
+                stepThickness.classList.add('invalid');
+            } else {
+                hintStepThickness.textContent = '1–128';
+                hintStepThickness.className = 'input-hint';
+                stepThickness.classList.remove('invalid');
+            }
+
+            if (region.length > 0 && thicknessValid) {
+                btnRunStep.disabled = false;
+                const typeLabel = stepType.value === 'depo' ? 'Deposition' : 'Etch';
+                stepFormHint.textContent = `${typeLabel}: ${region}, nthickness=${thickness}`;
+            } else {
+                btnRunStep.disabled = true;
+                stepFormHint.textContent = 'Enter region and thickness';
+            }
+        }
+
+        stepType.addEventListener('change', validateStepForm);
+        stepRegion.addEventListener('input', validateStepForm);
+        stepThickness.addEventListener('input', validateStepForm);
+
+        // --- Run Step ---
+        btnRunStep.addEventListener('click', async () => {
+            const type = stepType.value;
+            const region = stepRegion.value.trim();
+            const thickness = parseInt(stepThickness.value);
+
+            if (!sessionId || !region || isNaN(thickness)) return;
+
+            // UI: loading
+            btnRunStep.disabled = true;
+            btnRunStep.classList.add('loading');
+            viewerLoading.classList.remove('hidden');
+            const typeLabel = type === 'depo' ? 'Deposition' : 'Etch';
+            loadingText.textContent = `Running ${typeLabel}...`;
+            statusDot.style.background = '';
+            statusText.textContent = `Running step ${stepCount}...`;
+            statusInfo.textContent = '';
+
+            try {
+                const response = await fetch(`${API_BASE}/run_step`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: sessionId,
+                        statement: type,
+                        region: region,
+                        nthickness: thickness
+                    })
+                });
+
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(`Server error ${response.status}: ${errText}`);
+                }
+
+                const data = await response.json();
+                const gltfUrl = `${API_BASE}${data.gltf_url}`;
+
+                // Load and display new glTF
+                loadingText.textContent = 'Loading 3D model...';
+                const gltf = await loadModel(gltfUrl);
+                const { meshCount, vertexCount } = displayModel(gltf);
+
+                // UI: success
+                viewerLoading.classList.add('hidden');
+                statusDot.style.background = '#10b981';
+                statusText.textContent = `Step ${stepCount} complete`;
+                statusInfo.textContent = `Meshes: ${meshCount}  |  Vertices: ${vertexCount.toLocaleString()}`;
+
+                // Add to step list
+                stepsList.innerHTML += `
+                    <div class="step-item">
+                        <span class="step-check">✓</span>
+                        ${stepCount}. ${typeLabel} (${region}, t=${thickness})
+                    </div>
+                `;
+                stepCount++;
+
+                // Track region for autocomplete
+                usedRegions.add(region);
+                updateRegionList();
+
+                // Reset form for next step
+                stepRegion.value = '';
+                stepThickness.value = '';
+                hintStepThickness.textContent = '1–128';
+                hintStepThickness.className = 'input-hint';
+                btnRunStep.disabled = true;
+                stepFormHint.textContent = 'Enter region and thickness';
+
+            } catch (err) {
+                console.error('Run step error:', err);
+                viewerLoading.classList.add('hidden');
+                statusDot.style.background = '#ef4444';
+                statusText.textContent = 'Step failed';
+                statusInfo.textContent = err.message;
+                btnRunStep.disabled = false;
+            } finally {
+                btnRunStep.classList.remove('loading');
+            }
         });
     </script>
 
