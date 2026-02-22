@@ -527,18 +527,18 @@
                 <div class="sidebar-title" id="projectTitle">📐 New Project</div>
                 <div class="input-row">
                     <span class="input-label">nx (width)</span>
-                    <input type="number" class="input-field" id="inputNx" min="1" max="128" placeholder="e.g. 10">
-                    <span class="input-hint" id="hintNx">1–128</span>
+                    <input type="number" class="input-field" id="inputNx" min="1" max="1000" placeholder="e.g. 10">
+                    <span class="input-hint" id="hintNx">1–1000</span>
                 </div>
                 <div class="input-row">
                     <span class="input-label">ny (depth)</span>
-                    <input type="number" class="input-field" id="inputNy" min="1" max="128" placeholder="e.g. 10">
-                    <span class="input-hint" id="hintNy">1–128</span>
+                    <input type="number" class="input-field" id="inputNy" min="1" max="1000" placeholder="e.g. 10">
+                    <span class="input-hint" id="hintNy">1–1000</span>
                 </div>
                 <div class="input-row">
                     <span class="input-label">nz (height)</span>
-                    <input type="number" class="input-field" id="inputNz" min="1" max="128" placeholder="e.g. 5">
-                    <span class="input-hint" id="hintNz">1–128</span>
+                    <input type="number" class="input-field" id="inputNz" min="1" max="1000" placeholder="e.g. 5">
+                    <span class="input-hint" id="hintNz">1–1000</span>
                 </div>
                 <div class="input-row">
                     <span class="input-label">nthickness</span>
@@ -755,9 +755,9 @@
         }
 
         function validateAll() {
-            const a = validateField(inputNx, hintNx, 1, 128);
-            const b = validateField(inputNy, hintNy, 1, 128);
-            const c = validateField(inputNz, hintNz, 1, 128);
+            const a = validateField(inputNx, hintNx, 1, 1000);
+            const b = validateField(inputNy, hintNy, 1, 1000);
+            const c = validateField(inputNz, hintNz, 1, 1000);
             const d = validateNthickness();
 
             if (a && b && c && d) {
@@ -765,8 +765,13 @@
                 const ny = parseInt(inputNy.value);
                 const nz = parseInt(inputNz.value);
                 const total = nx * ny * nz;
-                btnCreate.disabled = false;
-                btnHint.innerHTML = `${nx} × ${ny} × ${nz} = <span class="voxel-count">${total.toLocaleString()} voxels</span>`;
+                if (total > 1000000) {
+                    btnCreate.disabled = true;
+                    btnHint.innerHTML = `${nx} × ${ny} × ${nz} = <span class="voxel-count" style="color:#ef4444;">${total.toLocaleString()} voxels</span> <span style="color:#ef4444;">(&gt; 1M limit)</span>`;
+                } else {
+                    btnCreate.disabled = false;
+                    btnHint.innerHTML = `${nx} × ${ny} × ${nz} = <span class="voxel-count">${total.toLocaleString()} voxels</span>`;
+                }
             } else {
                 btnCreate.disabled = true;
                 btnHint.textContent = 'Enter nx, ny, nz, and nthickness';
